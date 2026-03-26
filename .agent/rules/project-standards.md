@@ -1,6 +1,6 @@
 ---
-description: Project standards — function components only (no classes), MUI, styles in separate files, component IDs, Redux, loading, model types, common utils, Formik/Yup, reusable components
-alwaysApply: true
+trigger: always_on
+description: Project standards — function components only (no classes), Tailwind, styles in separate files, component IDs, Redux, loading, model types, common utils, Formik/Yup, reusable components
 ---
 
 # Project Standards
@@ -66,7 +66,7 @@ const validationSchema = yup.object({ email: yup.string().email().required() });
 ## 7. Reusable Components
 
 - Prefer **reusable components** from the components folder (e.g. shared buttons, inputs, cards).
-- Use them instead of one-off inline elements (e.g. use a shared `<AppButton />` rather than raw MUI `<Button>` everywhere).
+- Use them instead of one-off inline elements (e.g. use a shared `<AppButton />` rather than raw HTML `<button>` styled everywhere).
 - Ensures consistency and easier QA (IDs can be set once on the reusable component).
 
 ## 8. Function Components Only (No Class Components)
@@ -74,10 +74,10 @@ const validationSchema = yup.object({ email: yup.string().email().required() });
 - Use **function components** and hooks for all React components. Do not use class components (`class X extends React.Component`) or class-based services.
 - For API/services: export plain **async functions** from service modules (e.g. `export async function createUser(...)`) instead of class instances.
 
-## 9. MUI for UI
+## 9. tailwind for UI
 
-- Always use **Material-UI (MUI)** for UI components (e.g. `Box`, `Button`, `TextField`, `Dialog`, `Table`).
-- Do not introduce other UI libraries for standard components; keep the UI layer consistent with MUI.
+- Always use **Tailwind css** for UI components.
+- Do not introduce other UI libraries for standard components.
 
 ## 10. Styles in Separate Files
 
@@ -99,5 +99,5 @@ const validationSchema = yup.object({ email: yup.string().email().required() });
 | Forms | Use Formik + Yup for all forms |
 | UI | Use reusable components from the components folder |
 | Components | **Function components only**; no class components; services as plain async functions |
-| Framework | Always use **MUI** for UI components |
+| Framework | Always use **Tailwind CSS** for UI components |
 | Styles | Define styles in **separate files**; import into components |
