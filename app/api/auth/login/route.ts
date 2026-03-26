@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { User } from '@/model/User';
+import { sequelize } from '@/utils/db';
 
 /**
  * @swagger
@@ -49,6 +50,9 @@ export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
     
+    // Auto-create tables if they don't exist yet
+    await sequelize.sync();
+
     // In production we should connect the DB if not connected, but Sequelize pool handles it
     const user = await User.findOne({ where: { email } });
     if (!user || user.password !== password) {
