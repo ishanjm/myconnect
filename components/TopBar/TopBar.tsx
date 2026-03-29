@@ -13,7 +13,7 @@ export default function TopBar() {
   const dispatch = useDispatch();
   const router = useRouter();
   const pathname = usePathname();
-  const { user, error } = useSelector((state: RootState) => state.auth);
+  const { user, error, isLoading } = useSelector((state: RootState) => state.auth);
   const isDark = theme === "dark";
 
   const publicRoutes = ['/login', '/register', '/api/docs'];
@@ -26,16 +26,15 @@ export default function TopBar() {
     }
   }, [dispatch, isPublicRoute]); // Removed user and error from deps to prevent re-triggering on logout
 
-  // Redirect to login if user session is invalid on a protected route
+  // Redirect to login if user session is missing or invalid on a protected route
   useEffect(() => {
-    if (!user && !isPublicRoute && error) {
+    if (!user && !isPublicRoute && !isLoading) {
       router.push('/login');
     }
-  }, [user, isPublicRoute, error, router]);
+  }, [user, isPublicRoute, isLoading, router]);
 
   const handleLogout = async () => {
     dispatch(logoutRequest());
-    router.push('/login');
   };
 
   return (
