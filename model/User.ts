@@ -1,11 +1,13 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '../utils/db';
+import { UserRole } from './auth';
 
 export class User extends Model {
   public id!: number;
   public email!: string;
   public password!: string;
   public name!: string;
+  public role!: UserRole;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -30,6 +32,11 @@ User.init(
     name: {
       type: DataTypes.STRING,
       allowNull: true,
+    },
+    role: {
+      type: DataTypes.ENUM('super admin', 'group admin', 'member'),
+      allowNull: false,
+      defaultValue: 'member',
     },
   },
   {

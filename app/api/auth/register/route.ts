@@ -63,12 +63,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'User with this email already exists' }, { status: 400 });
     }
 
-    const user = await User.create({ email, password, name });
-    const token = await signToken({ id: user.id, email: user.email, name: user.name });
+    // Determine role based on existing user count
+    const userCount = await User.count();
+    const role = userCount === 0 ? 'super admin' : 'member';
+
+    const user = await User.create({ email, password, name, role });
+    const token = await signToken({ id: user.id, email: user.email, name: user.name, role: user.role });
 
     const response = NextResponse.json({
       token,
-      user: { id: user.id, email: user.email, name: user.name }
+      user: { id: user.id, email: user.email, name: user.name, role: user.role }
     });
 
     response.cookies.set('auth_token', token, {
