@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { User } from '@/model/User';
 import { sequelize } from '@/utils/db';
+import { signToken } from '@/utils/jwt';
 
 /**
  * @swagger
@@ -59,10 +60,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
-    return NextResponse.json({
-      token: "mock-jwt-token-for-" + user.id,
+    const token = await signToken({ id: user.id, email: user.email, name: user.name });
+
+    const response = NextResponse.json({
+      token,
       user: { id: user.id, email: user.email, name: user.name }
     });
+
+    response.cookies.set('auth_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+    });
+
+    return response;
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
