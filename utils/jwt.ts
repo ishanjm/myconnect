@@ -6,7 +6,15 @@ const getSecretKey = () => {
   return new TextEncoder().encode(secret + salt);
 };
 
-export async function signToken(payload: any): Promise<string> {
+export async function signAccessToken(payload: any): Promise<string> {
+  return await new SignJWT(payload)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('1h')
+    .sign(getSecretKey());
+}
+
+export async function signRefreshToken(payload: any): Promise<string> {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()

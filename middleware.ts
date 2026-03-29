@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { verifyToken } from '@/utils/jwt';
 
 export async function middleware(req: NextRequest) {
-  const token = req.cookies.get('auth_token')?.value;
+  const token = req.cookies.get('access_token')?.value;
   const path = req.nextUrl.pathname;
 
   // Define public routes that don't require authentication

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { User } from '@/model/User';
 import { sequelize } from '@/utils/db';
-import { signToken } from '@/utils/jwt';
+import { signAccessToken, signRefreshToken } from '@/utils/jwt';
 import { comparePassword } from '@/utils/password';
 
 /**
@@ -66,14 +66,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
     }
 
-    const token = await signToken({ id: user.id, email: user.email, name: user.name, role: user.role });
+    const accessToken = await signAccessToken({ id: user.id, email: user.email, name: user.name, role: user.role });
+    const refreshToken = await signRefreshToken({ id: user.id, email: user.email, name: user.name, role: user.role });
 
     const response = NextResponse.json({
-      token,
+      token: accessToken,
       user: { id: user.id, email: user.email, name: user.name, role: user.role }
     });
 
-    response.cookies.set('auth_token', token, {
+    response.cookies.set('access_token', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60, // 1 hour
+    });
+
+    response.cookies.set('refresh_token', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
