@@ -1,11 +1,41 @@
 "use client";
 
+import { useEffect } from "react";
 import { useTheme } from "@/components/ThemeProvider/ThemeProvider";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutRequest, meRequest } from "@/store/slices/auth";
+import { RootState } from "@/store/store";
+import { useRouter, usePathname } from "next/navigation";
 import styles from "./TopBar.module.css";
 
 export default function TopBar() {
   const { theme, toggleTheme } = useTheme();
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { user, error } = useSelector((state: RootState) => state.auth);
   const isDark = theme === "dark";
+
+  const publicRoutes = ['/login', '/register', '/api/docs'];
+  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
+
+  useEffect(() => {
+    if (!user && !isPublicRoute) {
+      dispatch(meRequest());
+    }
+  }, [dispatch, user, isPublicRoute]);
+
+  // Redirect to login if user session is invalid on a protected route
+  useEffect(() => {
+    if (!user && !isPublicRoute && error) {
+      router.push('/login');
+    }
+  }, [user, isPublicRoute, error, router]);
+
+  const handleLogout = async () => {
+    dispatch(logoutRequest());
+    router.push('/login');
+  };
 
   return (
     <header id="topbar" className={styles.topbar}>
@@ -19,19 +49,31 @@ export default function TopBar() {
         <a id="topbar-nav-about" href="/about" className={styles.navLink}>About</a>
       </nav>
 
-      {/* Theme toggle */}
-      <button
-        id="topbar-theme-toggle"
-        onClick={toggleTheme}
-        className={styles.themeToggle}
-        aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
-        title={`Switch to ${isDark ? "light" : "dark"} mode`}
-      >
-        <span className={styles.toggleTrack} data-dark={isDark ? "true" : "false"}>
-          <span className={styles.toggleThumb} />
-        </span>
-        <span className={styles.toggleIcon}>{isDark ? "🌙" : "☀️"}</span>
-      </button>
+      <div className="flex items-center gap-2">
+        {/* Theme toggle */}
+        <button
+          id="topbar-theme-toggle"
+          onClick={toggleTheme}
+          className={styles.themeToggle}
+          aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
+          title={`Switch to ${isDark ? "light" : "dark"} mode`}
+        >
+          <span className={styles.toggleTrack} data-dark={isDark ? "true" : "false"}>
+            <span className={styles.toggleThumb} />
+          </span>
+          <span className={styles.toggleIcon}>{isDark ? "🌙" : "☀️"}</span>
+        </button>
+
+        {user && (
+          <button
+            id="topbar-logout-button"
+            onClick={handleLogout}
+            className={styles.logoutButton}
+          >
+            Logout
+          </button>
+        )}
+      </div>
     </header>
   );
 }

@@ -110,3 +110,25 @@
   line-height: 1;
   user-select: none;
 }
+
+/* ─── Logout button ──────────────────────────────────── */
+.logoutButton {
+  margin-left: 0.5rem;
+  padding: 0.4rem 1rem;
+  background: var(--color-accent);
+  color: #ffffff;
+  border: none;
+  border-radius: 0.4rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.logoutButton:hover {
+  opacity: 0.9;
+}
+
+.logoutButton:active {
+  transform: scale(0.96);
+}

@@ -7,6 +7,8 @@ import { loginRequest } from "@/store/slices/auth";
 import { RootState } from "@/store/store";
 import { FormikTextField } from "../inputs/FormikTextField";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -17,7 +19,14 @@ const validationSchema = Yup.object().shape({
 
 export default function LoginForm() {
   const dispatch = useDispatch();
+  const router = useRouter();
   const { isLoading, error, token } = useSelector((state: RootState) => state.auth);
+
+  useEffect(() => {
+    if (token) {
+      router.push("/");
+    }
+  }, [token, router]);
 
   const formik = useFormik({
     initialValues: {
@@ -30,13 +39,7 @@ export default function LoginForm() {
     },
   });
 
-  if (token) {
-    return (
-      <div id="auth-login-success-message" className="p-4 bg-green-100 text-green-700 rounded mb-4">
-        Successfully logged in!
-      </div>
-    );
-  }
+  if (token) return null;
 
   return (
     <div className="w-full max-w-md p-8 bg-white dark:bg-gray-900 shadow-md rounded-lg">

@@ -1,8 +1,13 @@
 import { Epic, ofType, combineEpics } from 'redux-observable';
-import { mergeMap, map, catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
-import { loginRequest, loginSuccess, loginFailure, registerRequest, registerSuccess, registerFailure } from '../slices/auth';
-import { loginApi, registerApi } from '@/services/authService';
+import { mergeMap, map, catchError, switchMap } from 'rxjs/operators';
+import { of, from } from 'rxjs';
+import { 
+  loginRequest, loginSuccess, loginFailure, 
+  registerRequest, registerSuccess, registerFailure,
+  logoutRequest, logoutSuccess, logoutFailure,
+  meRequest, meSuccess, meFailure 
+} from '../slices/auth';
+import { loginApi, registerApi, logoutApi, meApi } from '@/services/authService';
 
 const loginEpic: Epic = (action$) =>
   action$.pipe(
@@ -42,4 +47,30 @@ const registerEpic: Epic = (action$) =>
     )
   );
 
-export const authEpic = combineEpics(loginEpic, registerEpic);
+export const logoutEpic: Epic = (action$) =>
+  action$.pipe(
+    ofType(logoutRequest.type),
+    switchMap(() =>
+      from(logoutApi()).pipe(
+        map(() => logoutSuccess()),
+        catchError((error: any) =>
+          of(logoutFailure(error.response?.data?.error || 'Logout failed'))
+        )
+      )
+    )
+  );
+
+export const meEpic: Epic = (action$) =>
+  action$.pipe(
+    ofType(meRequest.type),
+    switchMap(() =>
+      from(meApi()).pipe(
+        map((response: any) => meSuccess(response)),
+        catchError((error: any) =>
+          of(meFailure(error.response?.data?.error || 'Failed to fetch user'))
+        )
+      )
+    )
+  );
+
+export const authEpic = combineEpics(loginEpic, registerEpic, logoutEpic, meEpic);

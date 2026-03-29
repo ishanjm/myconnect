@@ -13,3 +13,15 @@ export function registerApi(credentials: RegisterCredentials) {
     apiClient.post<AuthResponse>('/auth/register', credentials).then((res) => res.data)
   );
 }
+
+export function logoutApi() {
+  return from(
+    apiClient.post('/auth/logout').then((res) => res.data)
+  );
+}
+
+export function meApi() {
+  return from(
+    apiClient.get('/auth/me').then((res) => res.data)
+  );
+}
