@@ -11,6 +11,7 @@ export async function middleware(req: NextRequest) {
     path.startsWith('/login') || 
     path.startsWith('/register') || 
     path.startsWith('/api/auth') ||
+    path.startsWith('/api/docs-spec') ||
     path.startsWith('/api-docs');
 
   let isTokenValid = false;
