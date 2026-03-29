@@ -20,10 +20,11 @@ export default function TopBar() {
   const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
 
   useEffect(() => {
-    if (!user && !isPublicRoute) {
+    // Only attempt to hydrate the session once on mount if no user is present
+    if (!user && !isPublicRoute && !error) {
       dispatch(meRequest());
     }
-  }, [dispatch, user, isPublicRoute]);
+  }, [dispatch, isPublicRoute]); // Removed user and error from deps to prevent re-triggering on logout
 
   // Redirect to login if user session is invalid on a protected route
   useEffect(() => {

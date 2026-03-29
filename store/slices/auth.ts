@@ -68,9 +68,9 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.error = null;
     },
-    meFailure: (state, action: PayloadAction<string>) => {
+    meFailure: (state) => {
       state.isLoading = false;
-      state.error = action.payload;
+      // We don't set error here because hydration failure just means user is not logged in
     },
   },
 });

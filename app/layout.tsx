@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import TopBar from "@/components/TopBar/TopBar";
 import ThemeProvider from "@/components/ThemeProvider/ThemeProvider";
 import { Providers } from "./Providers";
 
@@ -42,7 +41,6 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <Providers>
           <ThemeProvider>
-            <TopBar />
             {children}
           </ThemeProvider>
         </Providers>

@@ -66,8 +66,8 @@ export const meEpic: Epic = (action$) =>
     switchMap(() =>
       from(meApi()).pipe(
         map((response: any) => meSuccess(response)),
-        catchError((error: any) =>
-          of(meFailure(error.response?.data?.error || 'Failed to fetch user'))
+        catchError(() =>
+          of(meFailure())
         )
       )
     )
