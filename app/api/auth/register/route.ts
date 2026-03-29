@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { User } from '@/model/User';
 import { sequelize } from '@/utils/db';
 import { signToken } from '@/utils/jwt';
+import { hashPassword } from '@/utils/password';
 
 /**
  * @swagger
@@ -67,7 +68,8 @@ export async function POST(req: Request) {
     const userCount = await User.count();
     const role = userCount === 0 ? 'super admin' : 'member';
 
-    const user = await User.create({ email, password, name, role });
+    const hashedPassword = await hashPassword(password);
+    const user = await User.create({ email, password: hashedPassword, name, role });
     const token = await signToken({ id: user.id, email: user.email, name: user.name, role: user.role });
 
     const response = NextResponse.json({

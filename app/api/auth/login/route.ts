@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { User } from '@/model/User';
 import { sequelize } from '@/utils/db';
 import { signToken } from '@/utils/jwt';
+import { comparePassword } from '@/utils/password';
 
 /**
  * @swagger
@@ -56,8 +57,13 @@ export async function POST(req: Request) {
 
     // In production we should connect the DB if not connected, but Sequelize pool handles it
     const user = await User.findOne({ where: { email } });
-    if (!user || user.password !== password) {
-      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+    if (!user) {
+      return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
+    }
+
+    const isMatch = await comparePassword(password, user.password);
+    if (!isMatch) {
+      return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
     }
 
     const token = await signToken({ id: user.id, email: user.email, name: user.name, role: user.role });
