@@ -21,6 +21,7 @@ export interface AuthUser {
   lastName?: string;
   role: UserRole;
   subscription?: string;
+  profileImage?: string;
 }
 
 export interface AuthResponse {

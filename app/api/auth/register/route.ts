@@ -77,6 +77,9 @@ export async function POST(req: Request) {
       profileImageUrl = `/uploads/profiles/${fileName}`;
     }
 
+    // Sync model changes with the database
+    await sequelize.sync({ alter: true });
+
     // Check if user already exists
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {

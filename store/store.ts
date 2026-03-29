@@ -10,7 +10,12 @@ export const store = configureStore({
     auth: authReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({ thunk: false }).concat(epicMiddleware),
+    getDefaultMiddleware({ 
+      thunk: false,
+      serializableCheck: {
+        ignoredActions: ['auth/registerRequest'],
+      },
+    }).concat(epicMiddleware),
 });
 
 epicMiddleware.run(rootEpic);

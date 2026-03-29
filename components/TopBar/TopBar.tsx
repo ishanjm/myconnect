@@ -65,13 +65,21 @@ export default function TopBar() {
         </button>
 
         {user && (
-          <button
-            id="topbar-logout-button"
-            onClick={handleLogout}
-            className={styles.logoutButton}
-          >
-            Logout
-          </button>
+          <div id="topbar-user-info" className={styles.userInfo}>
+            <img 
+              id="topbar-user-avatar"
+              src={user.profileImage || "https://ui-avatars.com/api/?name=" + (user.firstName || user.email)} 
+              alt="Profile" 
+              className={styles.avatar}
+            />
+            <button
+              id="topbar-logout-button"
+              onClick={handleLogout}
+              className={styles.logoutButton}
+            >
+              Logout
+            </button>
+          </div>
         )}
       </div>
     </header>
