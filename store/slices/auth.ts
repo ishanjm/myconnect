@@ -33,7 +33,7 @@ const authSlice = createSlice({
       state.isLoading = false;
       state.error = action.payload;
     },
-    registerRequest: (state, action: PayloadAction<RegisterCredentials>) => {
+    registerRequest: (state, action: PayloadAction<any>) => {
       state.isLoading = true;
       state.error = null;
     },

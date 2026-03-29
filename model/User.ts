@@ -6,6 +6,12 @@ export class User extends Model {
   public id!: number;
   public email!: string;
   public password!: string;
+  public firstName!: string;
+  public lastName!: string;
+  public subscription!: 'trial' | 'small' | 'medium' | 'large' | 'custom';
+  public address!: string | null;
+  public mobileNumber!: string | null;
+  public profileImage!: string | null;
   public name!: string;
   public role!: UserRole;
 
@@ -28,6 +34,30 @@ User.init(
     password: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    firstName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    lastName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    subscription: {
+      type: DataTypes.ENUM('trial', 'small', 'medium', 'large', 'custom'),
+      allowNull: false,
+    },
+    address: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    mobileNumber: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    profileImage: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     name: {
       type: DataTypes.STRING,

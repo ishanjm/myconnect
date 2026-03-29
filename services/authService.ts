@@ -8,7 +8,7 @@ export function loginApi(credentials: LoginCredentials) {
   );
 }
 
-export function registerApi(credentials: RegisterCredentials) {
+export function registerApi(credentials: any) {
   return from(
     apiClient.post<AuthResponse>('/auth/register', credentials).then((res) => res.data)
   );

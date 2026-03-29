@@ -4,79 +4,122 @@ import { sequelize } from '@/utils/db';
 import { signAccessToken, signRefreshToken } from '@/utils/jwt';
 import { hashPassword } from '@/utils/password';
 
+import { writeFile, mkdir } from 'fs/promises';
+import { join } from 'path';
+
 /**
  * @swagger
  * /api/auth/register:
  *   post:
- *     summary: Register a new user
+ *     summary: Register a new user with extended profile information and image upload
  *     tags: [Auth]
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
  *               - email
  *               - password
- *               - name
+ *               - firstName
+ *               - lastName
+ *               - subscription
  *             properties:
  *               email:
  *                 type: string
  *               password:
  *                 type: string
- *               name:
+ *               firstName:
  *                 type: string
+ *               lastName:
+ *                 type: string
+ *               subscription:
+ *                 type: string
+ *                 enum: [trial, small, medium, large, custom]
+ *               address:
+ *                 type: string
+ *               mobileNumber:
+ *                 type: string
+ *               profileImage:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
  *         description: Registration successful
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 token:
- *                   type: string
- *                 user:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: integer
- *                     email:
- *                       type: string
- *                     name:
- *                       type: string
- *       400:
- *         description: User already exists
- *       500:
- *         description: Internal server error
  */
 export async function POST(req: Request) {
   try {
-    const { email, password, name } = await req.json();
+    const formData = await req.formData();
     
-    // Auto-create tables if they don't exist yet
-    await sequelize.sync();
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+    const firstName = formData.get('firstName') as string;
+    const lastName = formData.get('lastName') as string;
+    const subscription = formData.get('subscription') as any;
+    const address = formData.get('address') as string;
+    const mobileNumber = formData.get('mobileNumber') as string;
+    const profileImageFile = formData.get('profileImage') as File | null;
+    
+    let profileImageUrl = '';
+
+    if (profileImageFile && profileImageFile.size > 0) {
+      const bytes = await profileImageFile.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+
+      const uploadDir = join(process.cwd(), 'public', 'uploads', 'profiles');
+      await mkdir(uploadDir, { recursive: true });
+
+      const fileName = `${Date.now()}-${profileImageFile.name.replace(/\s+/g, '-')}`;
+      const filePath = join(uploadDir, fileName);
+      await writeFile(filePath, buffer);
+      
+      profileImageUrl = `/uploads/profiles/${fileName}`;
+    }
 
     // Check if user already exists
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
-      return NextResponse.json({ error: 'User with this email already exists' }, { status: 400 });
+      return NextResponse.json({ error: 'User already exists' }, { status: 400 });
     }
 
-    // Determine role based on existing user count
     const userCount = await User.count();
     const role = userCount === 0 ? 'super admin' : 'member';
-
     const hashedPassword = await hashPassword(password);
-    const user = await User.create({ email, password: hashedPassword, name, role });
-    const accessToken = await signAccessToken({ id: user.id, email: user.email, name: user.name, role: user.role });
-    const refreshToken = await signRefreshToken({ id: user.id, email: user.email, name: user.name, role: user.role });
+    const name = `${firstName} ${lastName}`.trim();
+
+    const user = await User.create({ 
+      email, 
+      password: hashedPassword, 
+      firstName, 
+      lastName, 
+      subscription, 
+      address, 
+      mobileNumber, 
+      profileImage: profileImageUrl, 
+      name, 
+      role 
+    });
+
+    const userPayload = { 
+      id: user.id, 
+      email: user.email, 
+      firstName: user.firstName, 
+      lastName: user.lastName, 
+      role: user.role,
+      subscription: user.subscription,
+      profileImage: user.profileImage
+    };
+
+    const accessToken = await signAccessToken(userPayload);
+    const refreshToken = await signRefreshToken(userPayload);
 
     const response = NextResponse.json({
       token: accessToken,
-      user: { id: user.id, email: user.email, name: user.name, role: user.role }
+      user: userPayload
     });
+
+    // ... (rest of cookie logic remains same)
 
     response.cookies.set('access_token', accessToken, {
       httpOnly: true,

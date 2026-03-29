@@ -6,14 +6,21 @@ export interface LoginCredentials {
 }
 
 export interface RegisterCredentials extends LoginCredentials {
-  name: string;
+  firstName: string;
+  lastName: string;
+  subscription: 'trial' | 'small' | 'medium' | 'large' | 'custom';
+  address?: string;
+  mobileNumber?: string;
+  profileImage?: string;
 }
 
 export interface AuthUser {
   id: number;
   email: string;
-  name?: string;
+  firstName?: string;
+  lastName?: string;
   role: UserRole;
+  subscription?: string;
 }
 
 export interface AuthResponse {
