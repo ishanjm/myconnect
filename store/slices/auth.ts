@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AuthUser, LoginCredentials } from '@/model/auth';
+import { AuthUser, LoginCredentials, RegisterCredentials } from '@/model/auth';
 
 interface AuthState {
   user: AuthUser | null;
@@ -33,6 +33,20 @@ const authSlice = createSlice({
       state.isLoading = false;
       state.error = action.payload;
     },
+    registerRequest: (state, action: PayloadAction<RegisterCredentials>) => {
+      state.isLoading = true;
+      state.error = null;
+    },
+    registerSuccess: (state, action: PayloadAction<{ user: AuthUser; token: string }>) => {
+      state.isLoading = false;
+      state.user = action.payload.user;
+      state.token = action.payload.token;
+      state.error = null;
+    },
+    registerFailure: (state, action: PayloadAction<string>) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
     logout: (state) => {
       state.user = null;
       state.token = null;
@@ -40,5 +54,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { loginRequest, loginSuccess, loginFailure, logout } = authSlice.actions;
+export const { loginRequest, loginSuccess, loginFailure, registerRequest, registerSuccess, registerFailure, logout } = authSlice.actions;
 export default authSlice.reducer;
