@@ -102,27 +102,21 @@ export default function TopBar() {
             <button
               id="topbar-user-menu-trigger"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="flex cursor-pointer items-center gap-2 rounded-full border-1 border-accent bg-surface px-1.5 py-1 transition-all hover:scale-105 active:scale-95 shadow-sm"
+              className="flex cursor-pointer items-center gap-1.5 rounded-full border-1.5 border-accent bg-surface p-0.5 pr-2 transition-all hover:scale-105 active:scale-95 shadow-md"
             >
-              <span className="hidden sm:inline text-sm font-bold text-fg ml-2">
-                {user.firstName || 'User'}
-              </span>
-              <span className="hidden sm:inline text-sm font-bold text-fg mr-1">
-                {user.lastName || 'User'}
-              </span>
               <img
                 id="topbar-user-avatar"
                 src={user.profileImage || "https://ui-avatars.com/api/?name=" + encodeURIComponent((user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.email))}
                 alt="Profile"
-                className="h-8 w-8 object-cover rounded-full"
+                className="h-8 w-8 object-cover rounded-full transition-transform"
               />
               <svg
-                className={`h-4 w-4 text-accent transition-transform duration-200 ${isMenuOpen ? 'rotate-180' : ''}`}
+                className={`h-3.5 w-3.5 text-accent transition-transform duration-200 ${isMenuOpen ? 'rotate-180' : ''}`}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
 
@@ -134,9 +128,14 @@ export default function TopBar() {
               >
                 {/* User Info Header */}
                 <div className="border-b border-border p-4 bg-accent/5">
-                  <p className="text-sm font-bold text-fg truncate">
-                    {user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 'User'}
-                  </p>
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-sm font-bold text-fg truncate">
+                      {user.firstName} {user.lastName}
+                    </p>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-accent bg-accent/10 px-2 py-0.5 rounded-full">
+                      {user.subscription || 'Trial'}
+                    </span>
+                  </div>
                   <p className="text-xs text-fg opacity-60 truncate">{user.email}</p>
                 </div>
 
