@@ -78,6 +78,7 @@ const validationSchema = yup.object({ email: yup.string().email().required() });
 
 - Always use **Tailwind css** for UI components.
 - Do not introduce other UI libraries for standard components.
+- Refer to [tailwind-usage.md](file:///c:/Ishan/developments/myconnect/.agent/rules/tailwind-usage.md) for detailed implementation standards.
 
 ## 10. Styles in Separate Files
 
@@ -99,5 +100,5 @@ const validationSchema = yup.object({ email: yup.string().email().required() });
 | Forms | Use Formik + Yup for all forms |
 | UI | Use reusable components from the components folder |
 | Components | **Function components only**; no class components; services as plain async functions |
-| Framework | Always use **Tailwind CSS** for UI components |
+| Framework | Always use **Tailwind CSS** for UI components (see [tailwind-usage.md](file:///c:/Ishan/developments/myconnect/.agent/rules/tailwind-usage.md)) |
 | Styles | Define styles in **separate files**; import into components |
