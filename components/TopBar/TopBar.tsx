@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "@/components/ThemeProvider/ThemeProvider";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutRequest, meRequest } from "@/store/slices/auth";
@@ -15,6 +15,11 @@ export default function TopBar() {
   const pathname = usePathname();
   const { user, error, isLoading } = useSelector((state: RootState) => state.auth);
   const isDark = theme === "dark";
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const publicRoutes = ['/login', '/register', '/api/docs'];
   const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
@@ -64,11 +69,11 @@ export default function TopBar() {
           <span className={styles.toggleIcon}>{isDark ? "🌙" : "☀️"}</span>
         </button>
 
-        {user && (
+        {mounted && user && (
           <div id="topbar-user-info" className={styles.userInfo}>
             <img 
               id="topbar-user-avatar"
-              src={user.profileImage || "https://ui-avatars.com/api/?name=" + (user.firstName || user.email)} 
+              src={user.profileImage || "https://ui-avatars.com/api/?name=" + encodeURIComponent((user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.email))} 
               alt="Profile" 
               className={styles.avatar}
             />

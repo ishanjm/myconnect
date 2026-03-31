@@ -66,12 +66,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
     }
 
-    const accessToken = await signAccessToken({ id: user.id, email: user.email, name: user.name, role: user.role });
-    const refreshToken = await signRefreshToken({ id: user.id, email: user.email, name: user.name, role: user.role });
+    const userPayload = { 
+      id: user.id, 
+      email: user.email, 
+      firstName: user.firstName, 
+      lastName: user.lastName, 
+      role: user.role,
+      subscription: user.subscription,
+      profileImage: user.profileImage
+    };
+
+    const accessToken = await signAccessToken(userPayload);
+    const refreshToken = await signRefreshToken(userPayload);
 
     const response = NextResponse.json({
       token: accessToken,
-      user: { id: user.id, email: user.email, name: user.name, role: user.role }
+      user: userPayload
     });
 
     response.cookies.set('access_token', accessToken, {

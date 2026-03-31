@@ -37,7 +37,8 @@ export async function GET(req: Request) {
         firstName: user.firstName,
         lastName: user.lastName,
         role: user.role,
-        subscription: user.subscription
+        subscription: user.subscription,
+        profileImage: user.profileImage
       }
     });
   } catch (error) {
