@@ -58,18 +58,45 @@ export default function TopBar() {
   };
 
   return (
-    <header id="topbar" className="sticky top-0 z-50 flex h-14 items-center justify-between border-b border-border bg-surface px-6 shadow-sm backdrop-blur-xl transition-all duration-300">
-      <div id="topbar-brand" className="flex items-center gap-2">
-        <span id="topbar-logo" className="text-[1.4rem] leading-none text-accent">⬡</span>
-        <span id="topbar-app-name" className="text-[1.05rem] font-bold tracking-tight text-fg">MyConnect</span>
+    <header id="topbar" className="sticky top-0 z-50 flex h-14 items-center border-b border-border bg-surface px-4 shadow-sm backdrop-blur-xl transition-all duration-300">
+      {/* 1. Left Column: Brand (takes up left space) */}
+      <div id="topbar-brand-section" className="flex flex-1 items-center gap-2">
+        <div id="topbar-brand" className="flex items-center gap-2 px-2" title="my connects">
+          <span id="topbar-logo" className="text-[1.4rem] leading-none text-accent">⬡</span>
+          <span id="topbar-app-name" className="hidden lg:inline text-[1.05rem] font-bold tracking-tight text-fg">MyConnect</span>
+        </div>
       </div>
 
-      <nav id="topbar-nav" className="flex items-center gap-1">
-        <a id="topbar-nav-home" href="/" className="rounded-lg px-3 py-1.5 text-sm font-medium text-fg opacity-70 transition-all hover:bg-accent/10 hover:opacity-100">Home</a>
-        <a id="topbar-nav-about" href="/about" className="rounded-lg px-3 py-1.5 text-sm font-medium text-fg opacity-70 transition-all hover:bg-accent/10 hover:opacity-100">About</a>
+      {/* 2. Middle Column: Centered Navigation (icons only) */}
+      <nav id="topbar-nav" className="flex h-full items-center gap-1 md:gap-2">
+        <NavItem href="/" active={pathname === "/"} label="Home">
+          <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a2 2 0 002 2h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a2 2 0 002-2v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+          </svg>
+        </NavItem>
+
+        <NavItem href="/dashboard" active={pathname === "/dashboard"} label="Dashboard">
+          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" />
+            <path d="M8 15V11" strokeLinecap="round" /><path d="M12 15V8" strokeLinecap="round" /><path d="M16 15V13" strokeLinecap="round" />
+          </svg>
+        </NavItem>
+
+        <NavItem href="/quiz" active={pathname === "/quiz"} label="Quiz">
+          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </NavItem>
+
+        <NavItem href="/docs" active={pathname === "/docs"} label="My Connects">
+          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
+          </svg>
+        </NavItem>
       </nav>
 
-      <div className="flex items-center gap-4">
+      {/* 3. Right Column: User Menu (takes up right space) */}
+      <div id="topbar-user-section" className="flex flex-1 items-center justify-end gap-2">
         {mounted && user && (
           <div className="relative" ref={menuRef}>
             <button
@@ -77,16 +104,16 @@ export default function TopBar() {
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="flex cursor-pointer items-center gap-2 rounded-full border-2 border-accent bg-surface pr-3 transition-all hover:scale-105 active:scale-95 shadow-sm"
             >
-              <img 
+              <img
                 id="topbar-user-avatar"
-                src={user.profileImage || "https://ui-avatars.com/api/?name=" + encodeURIComponent((user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.email))} 
-                alt="Profile" 
+                src={user.profileImage || "https://ui-avatars.com/api/?name=" + encodeURIComponent((user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.email))}
+                alt="Profile"
                 className="h-8 w-8 object-cover rounded-full"
               />
-              <svg 
-                className={`h-4 w-4 text-accent transition-transform duration-200 ${isMenuOpen ? 'rotate-180' : ''}`} 
-                fill="none" 
-                viewBox="0 0 24 24" 
+              <svg
+                className={`h-4 w-4 text-accent transition-transform duration-200 ${isMenuOpen ? 'rotate-180' : ''}`}
+                fill="none"
+                viewBox="0 0 24 24"
                 stroke="currentColor"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
@@ -95,7 +122,7 @@ export default function TopBar() {
 
             {/* Dropdown Menu */}
             {isMenuOpen && (
-              <div 
+              <div
                 id="topbar-user-dropdown"
                 className="absolute right-0 mt-2 w-64 origin-top-right overflow-hidden rounded-xl border border-border bg-surface shadow-2xl transition-all animate-in fade-in zoom-in duration-200"
               >
@@ -112,7 +139,7 @@ export default function TopBar() {
                   {/* Theme Toggle Item */}
                   <div className="flex items-center justify-between px-3 py-2 rounded-lg text-sm text-fg hover:bg-accent/10 transition-colors">
                     <span className="flex items-center gap-2">
-                       {isDark ? "🌙" : "☀️"} Mode
+                      {isDark ? "🌙" : "☀️"} Mode
                     </span>
                     <button
                       id="topbar-dropdown-theme-toggle"
@@ -120,7 +147,7 @@ export default function TopBar() {
                       className="flex cursor-pointer items-center gap-2 rounded-full border-none bg-transparent p-1 transition-all"
                       aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
                     >
-                      <span className={`relative block h-5 w-9 rounded-full border-[1.5px] border-border transition-all duration-300 ${isDark ? "bg-accent" : "bg-border-border opacity-50"}`}>
+                      <span className={`relative block h-5 w-9 rounded-full border-[1.5px] border-border transition-all duration-300 ${isDark ? "bg-accent" : "bg-border opacity-50"}`}>
                         <span className={`absolute top-1/2 h-3.5 w-3.5 -translate-y-1/2 rounded-full bg-white shadow-sm transition-all duration-300 ${isDark ? "left-[calc(100%-1.05rem)]" : "left-[0.15rem]"}`} />
                       </span>
                     </button>
@@ -143,15 +170,32 @@ export default function TopBar() {
         )}
 
         {!user && !isLoading && mounted && (
-           <a 
-             id="topbar-login-link"
-             href="/login" 
-             className="px-4 py-1.5 rounded-lg bg-accent text-white font-semibold text-sm hover:opacity-90 transition-all active:scale-95"
-           >
-             Login
-           </a>
+          <a
+            id="topbar-login-link"
+            href="/login"
+            className="px-4 py-1.5 rounded-lg bg-accent text-white font-semibold text-sm hover:opacity-90 transition-all active:scale-95"
+          >
+            Login
+          </a>
         )}
       </div>
     </header>
   );
 }
+
+const NavItem = ({ href, active, label, children }: { href: string; active: boolean; label: string; children: React.ReactNode }) => (
+  <a
+    id={`topbar-nav-${label.toLowerCase()}`}
+    href={href}
+    className={`relative flex h-full items-center px-4 md:px-8 transition-all duration-200 border-b-[3px] ${active
+        ? "text-accent border-accent bg-accent/5"
+        : "text-fg border-transparent opacity-60 hover:opacity-100 hover:bg-accent/5"
+      }`}
+    title={label}
+    aria-label={label}
+  >
+    <div className={`transition-transform duration-200 ${active ? 'scale-110' : 'group-hover:scale-110'}`}>
+      {children}
+    </div>
+  </a>
+);
