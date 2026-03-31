@@ -17,80 +17,46 @@ export default function PostCreator() {
   return (
     <div
       id="home-post-creator"
-      className={`w-full rounded-2xl border bg-[var(--color-surface)] shadow-sm transition-all duration-300 ${isFocused ? "border-accent shadow-accent/10 shadow-md" : "border-[var(--color-border)]"
-        }`}
+      className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] shadow-sm"
     >
-      {/* Top: Avatar + Textarea */}
-      <div className="flex gap-3 p-4">
+      {/* Top: Avatar + Input */}
+      <div className="flex items-center gap-3 p-3 text-[var(--color-fg)]">
         <img
           id="home-post-creator-avatar"
           src={avatarSrc}
           alt="Your avatar"
-          className="h-10 w-10 shrink-0 rounded-full object-cover ring-2 ring-accent/40"
+          className="h-10 w-10 shrink-0 rounded-full object-cover"
         />
-        <textarea
+        <input
           id="home-post-creator-input"
-          rows={isFocused ? 3 : 1}
-          placeholder="What's on your mind?"
+          type="text"
+          placeholder="Post a Shoutout"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => { if (!content) setIsFocused(false); }}
-          className="w-full resize-none rounded-xl bg-[var(--color-bg)] px-4 py-3 text-sm text-[var(--color-fg)] placeholder-[var(--color-fg)]/40 outline-none transition-all duration-200 border border-[var(--color-border)] focus:border-accent"
+          className="w-full rounded-full bg-[var(--color-bg)] px-4 py-2.5 text-sm text-[var(--color-fg)] placeholder-[var(--color-fg)]/50 outline-none transition-all duration-200 border border-transparent focus:border-[var(--color-border)] hover:bg-[var(--color-border)]/20"
         />
       </div>
 
-      {/* Bottom: Attachments + Actions */}
-      <div className="flex items-center justify-between border-t border-[var(--color-border)] px-4 py-2.5">
-        {/* Attachment Options */}
-        <div className="flex items-center gap-1">
-          <button
-            id="home-post-creator-photo-btn"
-            className="flex cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-[var(--color-fg)] opacity-60 transition-all hover:bg-accent/10 hover:opacity-100"
-            title="Add photo"
-          >
-            <svg className="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span className="hidden sm:inline">Photo</span>
-          </button>
-
-          <button
-            id="home-post-creator-video-btn"
-            className="flex cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-[var(--color-fg)] opacity-60 transition-all hover:bg-accent/10 hover:opacity-100"
-            title="Add video"
-          >
-            <svg className="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
-            <span className="hidden sm:inline">Video</span>
-          </button>
-
-          <button
-            id="home-post-creator-tag-btn"
-            className="flex cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-[var(--color-fg)] opacity-60 transition-all hover:bg-accent/10 hover:opacity-100"
-            title="Tag someone"
-          >
-            <svg className="h-4 w-4 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" />
-            </svg>
-            <span className="hidden sm:inline">Tag</span>
-          </button>
-        </div>
-
-        {/* Post Button */}
+      {/* Bottom: Actions */}
+      <div className="flex items-center border-t border-[var(--color-border)]">
         <button
-          id="home-post-creator-submit-btn"
-          disabled={!content.trim()}
-          className={`rounded-full px-5 py-1.5 text-sm font-bold transition-all duration-200 ${content.trim()
-              ? "cursor-pointer bg-accent text-white hover:opacity-90 active:scale-95 shadow-sm"
-              : "cursor-not-allowed opacity-40 bg-[var(--color-border)] text-[var(--color-fg)]"
-            }`}
+          id="home-post-creator-kudos-btn"
+          className="flex flex-1 cursor-pointer items-center justify-center gap-2 py-3 text-sm font-bold text-[var(--color-fg)] opacity-70 transition-all hover:bg-[var(--color-fg)]/5 hover:opacity-100 rounded-bl-md"
         >
-          <svg className="inline-block h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-            <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+          <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M19 5h-2V3a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v2H5a2 2 0 0 0-2 2v1a5 5 0 0 0 5 5h.215A5.98 5.98 0 0 0 11 16.94V19H9a1 1 0 0 0 0 2h6a1 1 0 0 0 0-2h-2v-2.06A5.98 5.98 0 0 0 15.785 15H16a5 5 0 0 0 5-5V7a2 2 0 0 0-2-2zM5 10V7h2v3.918A3.003 3.003 0 0 1 5 10zm12 3a3.001 3.001 0 0 1-2 .918V7h2v6z" />
           </svg>
-          Post
+          Give Kudos
+        </button>
+
+        <button
+          id="home-post-creator-poll-btn"
+          className="flex flex-1 cursor-pointer items-center justify-center gap-2 py-3 text-sm font-bold text-[var(--color-fg)] opacity-70 transition-all hover:bg-[var(--color-fg)]/5 hover:opacity-100 rounded-br-md"
+        >
+          <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M3 4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4zm2 1v14h14V5H5zm3 3h2v8H8V8zm4-2h2v10h-2V6zm4 4h2v6h-2v-6z" />
+          </svg>
+          Create a poll
         </button>
       </div>
     </div>
