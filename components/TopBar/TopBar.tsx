@@ -102,8 +102,14 @@ export default function TopBar() {
             <button
               id="topbar-user-menu-trigger"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="flex cursor-pointer items-center gap-2 rounded-full border-2 border-accent bg-surface pr-3 transition-all hover:scale-105 active:scale-95 shadow-sm"
+              className="flex cursor-pointer items-center gap-2 rounded-full border-1 border-accent bg-surface px-1.5 py-1 transition-all hover:scale-105 active:scale-95 shadow-sm"
             >
+              <span className="hidden sm:inline text-sm font-bold text-fg ml-2">
+                {user.firstName || 'User'}
+              </span>
+              <span className="hidden sm:inline text-sm font-bold text-fg mr-1">
+                {user.lastName || 'User'}
+              </span>
               <img
                 id="topbar-user-avatar"
                 src={user.profileImage || "https://ui-avatars.com/api/?name=" + encodeURIComponent((user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.email))}
@@ -188,8 +194,8 @@ const NavItem = ({ href, active, label, children }: { href: string; active: bool
     id={`topbar-nav-${label.toLowerCase()}`}
     href={href}
     className={`relative flex h-full items-center px-4 md:px-8 transition-all duration-200 border-b-[3px] ${active
-        ? "text-accent border-accent bg-accent/5"
-        : "text-fg border-transparent opacity-60 hover:opacity-100 hover:bg-accent/5"
+      ? "text-accent border-accent bg-accent/5"
+      : "text-fg border-transparent opacity-60 hover:opacity-100 hover:bg-accent/5"
       }`}
     title={label}
     aria-label={label}
