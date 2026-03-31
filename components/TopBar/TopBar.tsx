@@ -96,9 +96,26 @@ export default function TopBar() {
       </nav>
 
       {/* 3. Right Column: User Menu (takes up right space) */}
-      <div id="topbar-user-section" className="flex flex-1 items-center justify-end gap-2">
+      <div id="topbar-user-section" className="flex flex-1 items-center justify-end gap-2 md:gap-4 px-2">
         {mounted && user && (
-          <div className="relative" ref={menuRef}>
+          <>
+            {/* Notification Trigger */}
+            <button
+              id="topbar-notifications-btn"
+              className="relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-fg opacity-60 transition-all hover:bg-accent/10 hover:opacity-100 hover:scale-105 active:scale-95"
+              title="Notifications"
+            >
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              {/* Alert Badge */}
+              <span className="absolute top-2.5 right-2.5 flex h-2 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2.5 bg-accent outline outline-2 outline-surface"></span>
+              </span>
+            </button>
+
+            <div className="relative" ref={menuRef}>
             <button
               id="topbar-user-menu-trigger"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -172,7 +189,8 @@ export default function TopBar() {
               </div>
             )}
           </div>
-        )}
+        </>
+      )}
 
         {!user && !isLoading && mounted && (
           <a
