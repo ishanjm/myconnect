@@ -1,0 +1,17 @@
+export const sidebarStyles = {
+  card: "w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-sm overflow-hidden",
+  cardHeader: "p-4 flex items-center justify-between",
+  cardTitle: "text-sm font-bold text-[var(--color-fg)]",
+  profileInfo: "flex items-center gap-3 p-4",
+  profileName: "text-sm font-bold text-[var(--color-fg)] line-clamp-1",
+  profileLink: "text-xs font-semibold text-blue-500 hover:underline cursor-pointer",
+  actionBtn: "w-full mt-4 bg-blue-600 text-white rounded-xl py-2.5 text-sm font-bold transition-all hover:bg-blue-700 active:scale-[0.98]",
+  helpInner: "m-1 rounded-xl p-4 border border-purple-100 dark:border-purple-900/50 bg-purple-50/30 dark:bg-purple-900/10",
+  helpTitle: "text-sm font-bold text-purple-900 dark:text-purple-200",
+  helpDesc: "text-xs mt-1 text-purple-800/80 dark:text-purple-300/80",
+  helpBtn: "w-full mt-4 flex items-center justify-center gap-2 rounded-xl border border-purple-200 dark:border-purple-800 bg-white dark:bg-gray-800 py-2.5 text-xs font-bold text-purple-700 dark:text-purple-300 transition-all hover:bg-purple-50 dark:hover:bg-purple-900/20 active:scale-[0.98]",
+  listItem: "flex items-center justify-between p-4 border-t border-[var(--color-border)] hover:bg-[var(--color-fg)]/5 transition-all cursor-pointer first:border-0",
+  listItemLabel: "text-sm font-medium text-[var(--color-fg)] opacity-80",
+  listItemIcon: "h-5 w-5 text-[var(--color-fg)] opacity-50",
+  listItemArrow: "h-4 w-4 text-[var(--color-fg)] opacity-30",
+};
