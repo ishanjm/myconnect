@@ -4,6 +4,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { sidebarStyles } from "./SidebarCards.styles";
+import Link from "next/link";
 
 export const SidebarCards = () => {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -26,9 +27,9 @@ export const SidebarCards = () => {
               <span className="text-base font-bold text-[var(--color-fg)] line-clamp-1">
                 {name}
               </span>
-              <span className="text-sm font-semibold text-blue-500 hover:underline cursor-pointer">
+              <Link href="/profile" className="text-sm font-semibold text-blue-500 hover:underline cursor-pointer">
                 Go to my profile
-              </span>
+              </Link>
             </div>
           </div>
           <button id="sidebar-request-time-off-btn" className={sidebarStyles.actionBtn}>

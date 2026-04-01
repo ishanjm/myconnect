@@ -86,6 +86,21 @@ const validationSchema = yup.object({ email: yup.string().email().required() });
 - Do not define styles inline in the component file (e.g. avoid large `sx` objects or style objects in the same file as JSX).
 - Import styles from the dedicated file to keep components focused on structure and logic.
 
+## 11. Use Next.js Link for Internal Navigation
+
+- Always use the **`Link`** component from `next/link` for internal navigation instead of raw `<a>` tags.
+- `<a>` tags cause full page reloads; `Link` provides client-side navigation for faster transitions.
+- Only use `<a>` for external URLs (e.g. `https://...`).
+
+```tsx
+// ✅ GOOD — uses Link for internal routes
+import Link from "next/link";
+<Link href="/profile" className="...">My Profile</Link>
+
+// ❌ BAD — raw anchor causes full page reload
+<a href="/profile">My Profile</a>
+```
+
 ---
 
 **Summary**
@@ -102,3 +117,4 @@ const validationSchema = yup.object({ email: yup.string().email().required() });
 | Components | **Function components only**; no class components; services as plain async functions |
 | Framework | Always use **Tailwind CSS** for UI components (see [tailwind-usage.md](file:///c:/Ishan/developments/myconnect/.agent/rules/tailwind-usage.md)) |
 | Styles | Define styles in **separate files**; import into components |
+| Navigation | Use **`Link`** from `next/link` for all internal links; never use raw `<a>` tags |

@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logoutRequest, meRequest } from "@/store/slices/auth";
 import { RootState } from "@/store/store";
 import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 
 export default function TopBar() {
   const { theme, toggleTheme } = useTheme();
@@ -158,6 +159,16 @@ export default function TopBar() {
 
                 {/* Menu Items */}
                 <div className="p-2 space-y-1">
+                  {/* My Profile */}
+                  <Link
+                    id="topbar-dropdown-profile-link"
+                    href="/profile"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-fg hover:bg-accent/10 transition-colors"
+                  >
+                    <span>👤</span> My Profile
+                  </Link>
+
                   {/* Theme Toggle Item */}
                   <div className="flex items-center justify-between px-3 py-2 rounded-lg text-sm text-fg hover:bg-accent/10 transition-colors">
                     <span className="flex items-center gap-2">
@@ -193,13 +204,13 @@ export default function TopBar() {
       )}
 
         {!user && !isLoading && mounted && (
-          <a
+          <Link
             id="topbar-login-link"
             href="/login"
             className="px-4 py-1.5 rounded-lg bg-accent text-white font-semibold text-sm hover:opacity-90 transition-all active:scale-95"
           >
             Login
-          </a>
+          </Link>
         )}
       </div>
     </header>
@@ -207,7 +218,7 @@ export default function TopBar() {
 }
 
 const NavItem = ({ href, active, label, children }: { href: string; active: boolean; label: string; children: React.ReactNode }) => (
-  <a
+  <Link
     id={`topbar-nav-${label.toLowerCase()}`}
     href={href}
     className={`relative flex h-full items-center px-4 md:px-8 transition-all duration-200 border-b-[3px] ${active
@@ -220,5 +231,5 @@ const NavItem = ({ href, active, label, children }: { href: string; active: bool
     <div className={`transition-transform duration-200 ${active ? 'scale-110' : 'group-hover:scale-110'}`}>
       {children}
     </div>
-  </a>
+  </Link>
 );

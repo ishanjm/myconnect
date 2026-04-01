@@ -7,9 +7,9 @@ export default function Home() {
   return (
     <div id="home-page" className="min-h-screen bg-[var(--color-bg)] px-4 py-8">
       <div className="mx-auto max-w-6xl flex flex-col lg:flex-row justify-center gap-8 items-start">
-        
+
         {/* Main Feed Section */}
-        <div id="home-feed-section" className="w-full max-w-2xl space-y-6">
+        <div id="home-feed-section" className="w-full max-w-3xl space-y-6">
           {/* Top Followers Card */}
           <div
             id="home-top-followers-card"
