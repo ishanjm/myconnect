@@ -3,9 +3,7 @@ import { User } from '@/model/User';
 import { sequelize } from '@/utils/db';
 import { signAccessToken, signRefreshToken } from '@/utils/jwt';
 import { hashPassword } from '@/utils/password';
-
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { uploadToCloudinary } from '@/utils/cloudinary';
 
 /**
  * @swagger
@@ -66,15 +64,7 @@ export async function POST(req: Request) {
     if (profileImageFile && profileImageFile.size > 0) {
       const bytes = await profileImageFile.arrayBuffer();
       const buffer = Buffer.from(bytes);
-
-      const uploadDir = join(process.cwd(), 'public', 'uploads', 'profiles');
-      await mkdir(uploadDir, { recursive: true });
-
-      const fileName = `${Date.now()}-${profileImageFile.name.replace(/\s+/g, '-')}`;
-      const filePath = join(uploadDir, fileName);
-      await writeFile(filePath, buffer);
-      
-      profileImageUrl = `/uploads/profiles/${fileName}`;
+      profileImageUrl = await uploadToCloudinary(buffer, 'myconnect/profiles');
     }
 
     // Sync model changes with the database
