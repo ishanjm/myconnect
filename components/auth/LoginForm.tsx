@@ -8,7 +8,7 @@ import { RootState } from "@/store/store";
 import { FormikTextField } from "../inputs/FormikTextField";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -22,11 +22,21 @@ export default function LoginForm() {
   const router = useRouter();
   const { isLoading, error, token } = useSelector((state: RootState) => state.auth);
 
+const [hasAttemptedLogin, setHasAttemptedLogin] = useState(false);
+
   useEffect(() => {
-    if (token) {
+    // If the component mounts and we have a token, but haven't attempted login,
+    // the Redux token is stale (cookie expired/missing, so middleware let us through).
+    if (token && !hasAttemptedLogin) {
+      dispatch({ type: 'auth/logoutSuccess' });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (token && hasAttemptedLogin) {
       router.push("/");
     }
-  }, [token, router]);
+  }, [token, hasAttemptedLogin, router]);
 
   const formik = useFormik({
     initialValues: {
@@ -35,11 +45,10 @@ export default function LoginForm() {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
+      setHasAttemptedLogin(true);
       dispatch(loginRequest(values));
     },
   });
-
-  if (token) return null;
 
   return (
     <div className="w-full max-w-md p-8 bg-white dark:bg-gray-900 shadow-md rounded-lg">
