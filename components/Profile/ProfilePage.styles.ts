@@ -8,4 +8,9 @@ export const profilePageStyles = {
   roleBadge: "text-[10px] font-black uppercase tracking-widest text-accent bg-accent/10 px-2.5 py-0.5 rounded-full",
   subscriptionBadge: "text-[10px] font-black uppercase tracking-widest text-emerald-500 bg-emerald-500/10 px-2.5 py-0.5 rounded-full",
   sectionTitle: "text-base font-bold text-[var(--color-fg)]",
+  tabsContainer: "flex items-center gap-1 border-b border-[var(--color-border)] px-4 bg-[var(--color-surface)] sticky top-0 z-10",
+  tabButton: "relative px-4 py-4 text-sm font-medium transition-all duration-200 hover:text-accent outline-none",
+  activeTab: "text-accent border-b-2 border-accent font-bold",
+  inactiveTab: "text-[var(--color-fg)] opacity-50 hover:opacity-100",
+  tabBadge: "ml-2 px-1.5 py-0.5 text-[10px] bg-[var(--color-border)] rounded-md font-bold",
 };

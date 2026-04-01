@@ -1,12 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { profilePageStyles as styles } from "./ProfilePage.styles";
 
 export default function ProfilePage() {
   const user = useSelector((state: RootState) => state.auth.user);
+  const [activeTab, setActiveTab] = useState("Profile info");
+
+  const tabs = ["Profile info", "Docs", "Ask me", "Quiz", "Followers"];
 
   if (!user) return null;
 
@@ -50,45 +53,126 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Details Card */}
-        <div id="profile-details-card" className={styles.card}>
-          <div className="p-6">
-            <h2 id="profile-details-title" className={styles.sectionTitle}>
-              Personal Information
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-              <InfoField
-                id="profile-field-first-name"
-                label="First Name"
-                value={user.firstName}
-              />
-              <InfoField
-                id="profile-field-last-name"
-                label="Last Name"
-                value={user.lastName}
-              />
-              <InfoField
-                id="profile-field-email"
-                label="Email"
-                value={user.email}
-              />
-              <InfoField
-                id="profile-field-role"
-                label="Role"
-                value={user.role}
-              />
-              <InfoField
-                id="profile-field-subscription"
-                label="Subscription"
-                value={user.subscription || "Trial"}
-              />
+        {/* Tab Navigation */}
+        <div id="profile-tabs-nav" className={styles.tabsContainer}>
+          {tabs.map((tab) => (
+            <button
+              key={tab}
+              id={`profile-tab-${tab.toLowerCase().replace(/\s+/g, "-")}`}
+              onClick={() => setActiveTab(tab)}
+              className={`${styles.tabButton} ${
+                activeTab === tab ? styles.activeTab : styles.inactiveTab
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab Content */}
+        <div id="profile-tab-content-area" className="transition-all duration-300">
+          {activeTab === "Profile info" && (
+            <div id="profile-details-card" className={styles.card}>
+              <div className="p-6">
+                <h2 id="profile-details-title" className={styles.sectionTitle}>
+                  Personal Information
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                  <InfoField
+                    id="profile-field-first-name"
+                    label="First Name"
+                    value={user.firstName}
+                  />
+                  <InfoField
+                    id="profile-field-last-name"
+                    label="Last Name"
+                    value={user.lastName}
+                  />
+                  <InfoField
+                    id="profile-field-email"
+                    label="Email"
+                    value={user.email}
+                  />
+                  <InfoField
+                    id="profile-field-role"
+                    label="Role"
+                    value={user.role}
+                  />
+                  <InfoField
+                    id="profile-field-subscription"
+                    label="Subscription"
+                    value={user.subscription || "Trial"}
+                  />
+                </div>
+              </div>
             </div>
-          </div>
+          )}
+
+          {activeTab === "Docs" && (
+            <PlaceholderTab
+              id="profile-tab-docs-content"
+              title="Documentation"
+              description="Keep track of your technical documents, notes, and guides here."
+              icon="📄"
+            />
+          )}
+
+          {activeTab === "Ask me" && (
+            <PlaceholderTab
+              id="profile-tab-ask-me-content"
+              title="Ask Me Anything"
+              description="Enable people to ask you questions directly. Your responses will appear here."
+              icon="💬"
+            />
+          )}
+
+          {activeTab === "Quiz" && (
+            <PlaceholderTab
+              id="profile-tab-quiz-content"
+              title="Knowledge Quizzes"
+              description="Test your knowledge or challenge others with customized quizzes."
+              icon="🧠"
+            />
+          )}
+
+          {activeTab === "Followers" && (
+            <PlaceholderTab
+              id="profile-tab-followers-content"
+              title="Your Community"
+              description="Manage your followers and see who is interested in your contributions."
+              icon="👥"
+            />
+          )}
         </div>
       </div>
     </div>
   );
 }
+
+const PlaceholderTab = ({
+  id,
+  title,
+  description,
+  icon,
+}: {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+}) => (
+  <div id={id} className={styles.card}>
+    <div className="p-12 flex flex-col items-center text-center space-y-4">
+      <span className="text-5xl">{icon}</span>
+      <h2 className="text-xl font-bold text-[var(--color-fg)]">{title}</h2>
+      <p className="text-sm text-[var(--color-fg)] opacity-60 max-w-sm mx-auto">
+        {description}
+      </p>
+      <button className="mt-4 px-6 py-2 bg-accent text-white rounded-full text-sm font-bold shadow-md hover:opacity-90 transition-opacity">
+        Get Started
+      </button>
+    </div>
+  </div>
+);
 
 const InfoField = ({
   id,

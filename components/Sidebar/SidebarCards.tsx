@@ -89,6 +89,27 @@ export const SidebarCards = () => {
           </div>
         </div>
       </div>
+
+      {/* 4. Master Data Card */}
+      <div id="sidebar-master-data-card" className={sidebarStyles.card}>
+        <div className="p-4 border-b border-[var(--color-border)]">
+          <h3 className={sidebarStyles.cardTitle}>Master Data</h3>
+        </div>
+        <div className="flex flex-col">
+          <Link href="/master-data/locations" id="sidebar-action-locations" className={sidebarStyles.listItem}>
+            <div className="flex items-center gap-3">
+              <svg className="h-5 w-5 text-[var(--color-fg)] opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span className={sidebarStyles.listItemLabel}>Locations</span>
+            </div>
+            <svg className={sidebarStyles.listItemArrow} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };

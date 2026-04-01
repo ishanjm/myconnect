@@ -12,10 +12,12 @@ import {
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import authReducer from './slices/auth';
+import locationsReducer from './slices/locations';
 import { rootEpic } from './epics/rootEpic';
 
 const rootReducer = combineReducers({
   auth: authReducer,
+  locations: locationsReducer,
 });
 
 const persistConfig = {
