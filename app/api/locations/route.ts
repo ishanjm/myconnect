@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Location } from '@/model/Location';
 import { verifyToken } from '@/utils/jwt';
-import { sequelize } from '@/utils/db';
 
 /**
  * @swagger
@@ -64,7 +63,6 @@ export async function GET(req: Request) {
   if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    await sequelize.sync({ alter: true });
     const locations = await Location.findAll({ 
       where: { userId: payload.id },
       order: [['name', 'ASC']] 
@@ -80,7 +78,6 @@ export async function POST(req: Request) {
   if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    await sequelize.sync({ alter: true });
     const body = await req.json();
     const { name, code, address, city, zipCode, status } = body;
 

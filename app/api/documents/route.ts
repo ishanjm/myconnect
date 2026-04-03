@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Document } from '@/model/Document';
 import { verifyToken } from '@/utils/jwt';
-import { sequelize } from '@/utils/db';
 import { uploadToCloudinary } from '@/utils/cloudinary';
 
 /**
@@ -67,7 +66,6 @@ export async function GET(req: Request) {
   if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    await sequelize.sync({ alter: true });
     const documents = await Document.findAll({ 
       where: { userId: payload.id },
       order: [['createdAt', 'DESC']] 
@@ -83,7 +81,6 @@ export async function POST(req: Request) {
   if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    await sequelize.sync({ alter: true });
     
     const formData = await req.formData();
     const title = formData.get('title') as string;

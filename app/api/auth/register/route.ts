@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { User } from '@/model/User';
-import { sequelize } from '@/utils/db';
 import { signAccessToken, signRefreshToken } from '@/utils/jwt';
 import { hashPassword } from '@/utils/password';
 import { uploadToCloudinary } from '@/utils/cloudinary';
@@ -69,8 +68,6 @@ export async function POST(req: Request) {
       ]);
     }
 
-    // Sync model changes with the database
-    await sequelize.sync({ alter: true });
 
     // Check if user already exists
     const existingUser = await User.findOne({ where: { email } });

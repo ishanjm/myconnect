@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { User } from '@/model/User';
-import { sequelize } from '@/utils/db';
 import { signAccessToken, signRefreshToken } from '@/utils/jwt';
 import { comparePassword } from '@/utils/password';
 
@@ -51,11 +50,7 @@ import { comparePassword } from '@/utils/password';
 export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
-    
-    // Auto-create tables if they don't exist yet
-    await sequelize.sync();
 
-    // In production we should connect the DB if not connected, but Sequelize pool handles it
     const user = await User.findOne({ where: { email } });
     if (!user) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });

@@ -25,3 +25,17 @@ export const sequelize = new Sequelize(
     logging: false,
   }
 );
+
+let isInitialSync = false;
+export const syncDB = async (force = false) => {
+  if (isInitialSync && !force) return;
+  try {
+    await sequelize.authenticate();
+    await sequelize.sync({ force });
+    isInitialSync = true;
+    console.log(`Database synchronized successfully (force: ${force})`);
+  } catch (error) {
+    console.error('Unable to synchronize database:', error);
+    throw error;
+  }
+};

@@ -43,6 +43,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [
           'auth/registerRequest',
+          'documents/createDocumentRequest',
           FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER
         ],
       },

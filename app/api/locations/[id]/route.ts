@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Location } from '@/model/Location';
 import { verifyToken } from '@/utils/jwt';
-import { sequelize } from '@/utils/db';
 
 async function validateToken(req: Request) {
   const accessToken = req.headers.get('cookie')?.split('; ').find(c => c.startsWith('access_token='))?.split('=')[1];
@@ -19,7 +18,6 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    await sequelize.sync({ alter: true });
     const location = await Location.findOne({ 
       where: { id, userId: payload.id } 
     });
@@ -38,7 +36,6 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    await sequelize.sync({ alter: true });
     const location = await Location.findOne({ 
       where: { id, userId: payload.id } 
     });
@@ -64,7 +61,6 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
   if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    await sequelize.sync({ alter: true });
     const location = await Location.findOne({ 
       where: { id, userId: payload.id } 
     });
