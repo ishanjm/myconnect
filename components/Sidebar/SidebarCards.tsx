@@ -76,17 +76,21 @@ export const SidebarCards = () => {
           </div>
 
           {/* Company Docs */}
-          <div id="sidebar-action-company-docs" className={sidebarStyles.listItem}>
+          <Link 
+            href="/documents" 
+            id="sidebar-action-company-docs" 
+            className={sidebarStyles.listItem}
+          >
             <div className="flex items-center gap-3">
               <svg className="h-5 w-5 text-[var(--color-fg)] opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
-              <span className={sidebarStyles.listItemLabel}>Company docs</span>
+              <span className={sidebarStyles.listItemLabel}>Documents</span>
             </div>
             <svg className={sidebarStyles.listItemArrow} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-          </div>
+          </Link>
         </div>
       </div>
 
