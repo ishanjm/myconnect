@@ -12,6 +12,7 @@ export async function proxy(req: NextRequest) {
     path.startsWith('/register') || 
     path.startsWith('/api/auth') ||
     path.startsWith('/api/docs-spec') ||
+    path.startsWith('/api/documents/download') ||
     path.startsWith('/api-docs');
 
   let isTokenValid = false;

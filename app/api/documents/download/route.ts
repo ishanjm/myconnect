@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
+import axios from 'axios';
+import https from 'https';
 
-// Allow self-signed certificates (corporate proxy / dev only)
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+// Create an HTTPS agent that explicitly bypasses SSL verification
+// Required for corporate proxy environments with SSL interception
+const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
 /**
  * @swagger
@@ -39,28 +42,28 @@ export async function GET(req: Request) {
   }
 
   try {
-    const response = await fetch(fileUrl);
-    
-    if (!response.ok) {
-      console.error(`Failed to fetch file from ${fileUrl}: ${response.statusText}`);
-      return NextResponse.json({ error: 'Failed to fetch the remote file' }, { status: 502 });
-    }
+    const response = await axios.get(fileUrl, {
+      responseType: 'arraybuffer',
+      httpsAgent,
+      timeout: 30000,
+    });
 
-    const headers = new Headers();
+    const contentType = response.headers['content-type'] || 'application/octet-stream';
 
-    // Set content type and attachment headers
-    const contentType = response.headers.get('Content-Type') || 'application/octet-stream';
-    headers.set('Content-Type', contentType);
-    headers.set('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
-    headers.set('Cache-Control', 'no-cache');
-
-    // Return the response body stream directly
-    return new NextResponse(response.body, {
+    return new NextResponse(response.data, {
       status: 200,
-      headers,
+      headers: {
+        'Content-Type': contentType,
+        'Content-Disposition': `attachment; filename="${encodeURIComponent(filename)}"`,
+        'Content-Length': String(response.data.byteLength),
+        'Cache-Control': 'no-cache',
+      },
     });
   } catch (error: any) {
-    console.error('Download Proxy Exception:', error);
-    return NextResponse.json({ error: 'An unexpected error occurred during download' }, { status: 500 });
+    console.error('Download Proxy Error:', error.message);
+    return NextResponse.json({ 
+      error: 'Failed to download file', 
+      details: error.message,
+    }, { status: 500 });
   }
 }

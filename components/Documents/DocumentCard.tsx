@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { IDocument } from "@/model/Document";
 import { ILocation as Location } from "@/model/Location";
 import { IDocumentCategory as Category } from "@/model/DocumentCategory";
@@ -39,6 +39,8 @@ const getFileTypeIcon = (type: IDocument["fileType"]) => {
 };
 
 export const DocumentCard: React.FC<DocumentCardProps> = ({ document, allLocations = [], allCategories = [] }) => {
+  const [isDownloading, setIsDownloading] = useState(false);
+
   const categoryName = useMemo(() => {
     return allCategories.find(c => c.id === document.categoryId)?.name || "Uncategorized";
   }, [document.categoryId, allCategories]);
@@ -53,6 +55,43 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ document, allLocatio
   const previewUrl = useMemo(() => {
     return getDocumentPreviewUrl(document.downloadUrl, document.fileType);
   }, [document.downloadUrl, document.fileType]);
+
+  const handleDownload = () => {
+    if (isDownloading) return;
+    setIsDownloading(true);
+    const filename = `${document.title}.${document.fileType}`;
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", document.downloadUrl, true);
+    xhr.responseType = "blob";
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        // Force the content type to octet-stream so browser treats it as download
+        const blob = new Blob([xhr.response], { type: "application/octet-stream" });
+        const blobUrl = window.URL.createObjectURL(blob);
+        const link = window.document.createElement("a");
+        link.href = blobUrl;
+        link.download = filename;
+        window.document.body.appendChild(link);
+        link.click();
+        window.document.body.removeChild(link);
+        window.URL.revokeObjectURL(blobUrl);
+      } else {
+        // Fallback: open in new tab
+        window.open(document.downloadUrl, "_blank");
+      }
+      setIsDownloading(false);
+    };
+
+    xhr.onerror = () => {
+      // Fallback: open in new tab
+      window.open(document.downloadUrl, "_blank");
+      setIsDownloading(false);
+    };
+
+    xhr.send();
+  };
 
   return (
     <div 
@@ -101,17 +140,24 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ document, allLocatio
         <span className="text-[10px] font-mono font-black text-[var(--color-fg)] opacity-30">
           {document.fileSize}
         </span>
-        <a 
-          href={`/api/documents/download?url=${encodeURIComponent(document.downloadUrl)}&filename=${encodeURIComponent(`${document.title}.${document.fileType}`)}`}
+        <button 
           id={`document-download-${document.id}`}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-accent/10 text-accent rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-accent hover:text-white transition-all shadow-sm shadow-accent/5"
-          download
+          onClick={handleDownload}
+          disabled={isDownloading}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-accent/10 text-accent rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-accent hover:text-white transition-all shadow-sm shadow-accent/5 disabled:opacity-50 disabled:cursor-wait"
         >
-          <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-          </svg>
-          Get File
-        </a>
+          {isDownloading ? (
+            <svg className="h-3.5 w-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+          ) : (
+            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+          )}
+          {isDownloading ? "Saving..." : "Get File"}
+        </button>
       </div>
     </div>
   );
