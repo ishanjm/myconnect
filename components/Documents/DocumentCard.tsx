@@ -4,6 +4,7 @@ import React, { useMemo } from "react";
 import { IDocument } from "@/model/Document";
 import { ILocation as Location } from "@/model/Location";
 import { IDocumentCategory as Category } from "@/model/DocumentCategory";
+import { getDocumentPreviewUrl } from "@/common/documentUtils";
 
 interface DocumentCardProps {
   document: IDocument;
@@ -49,25 +50,42 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ document, allLocatio
       .filter(Boolean) as string[];
   }, [document.locationIds, allLocations]);
 
+  const previewUrl = useMemo(() => {
+    return getDocumentPreviewUrl(document.downloadUrl, document.fileType);
+  }, [document.downloadUrl, document.fileType]);
+
   return (
     <div 
       id={`document-card-${document.id}`}
-      className="group bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 flex flex-col h-full"
+      className="group bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-3.5 hover:shadow-2xl hover:scale-[1.01] transition-all duration-500 flex flex-col h-full"
     >
-      <div className="flex items-start justify-between mb-4">
-        <div className="p-3 bg-[var(--color-bg)] rounded-xl group-hover:bg-accent/5 transition-colors">
-          {getFileTypeIcon(document.fileType)}
+      <div className="relative aspect-video rounded-xl overflow-hidden bg-[var(--color-bg)] border border-[var(--color-border)] group-hover:border-accent/30 transition-all mb-3">
+        {previewUrl ? (
+          <img 
+            src={previewUrl} 
+            alt={document.title} 
+            className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700 select-none"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-accent/5 opacity-40 group-hover:opacity-100 transition-all">
+            {getFileTypeIcon(document.fileType)}
+          </div>
+        )}
+        
+        {/* Category Badge Over Preview */}
+        <div className="absolute top-3 right-3 z-10">
+          <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-[var(--color-surface)]/80 backdrop-blur-md shadow-sm border border-[var(--color-border)] text-[var(--color-fg)]">
+            {categoryName}
+          </span>
         </div>
-        <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-[var(--color-bg)] text-[var(--color-fg)] opacity-60">
-          {categoryName}
-        </span>
       </div>
 
       <div className="flex-1">
-        <h3 className="text-base font-bold text-[var(--color-fg)] mb-1 line-clamp-1">
+        <h3 className="text-sm font-black text-[var(--color-fg)] mb-0.5 line-clamp-1">
           {document.title}
         </h3>
-        <p className="text-xs text-[var(--color-fg)] opacity-40 line-clamp-2 leading-relaxed mb-3">
+        <p className="text-[11px] text-[var(--color-fg)] opacity-40 line-clamp-1 leading-relaxed mb-2">
           {document.description}
         </p>
         <div className="flex flex-wrap gap-1.5">
@@ -79,21 +97,20 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ document, allLocatio
         </div>
       </div>
 
-      <div className="mt-6 pt-4 border-t border-[var(--color-border)] flex items-center justify-between">
-        <div className="flex flex-col">
-          <span className="text-[10px] font-bold text-[var(--color-fg)] opacity-30 uppercase tracking-tighter">Size</span>
-          <span className="text-xs font-mono font-bold text-[var(--color-fg)] opacity-60">{document.fileSize}</span>
-        </div>
+      <div className="mt-4 pt-3 border-t border-[var(--color-border)] flex items-center justify-between">
+        <span className="text-[10px] font-mono font-black text-[var(--color-fg)] opacity-30">
+          {document.fileSize}
+        </span>
         <a 
-          href={document.downloadUrl}
+          href={`/api/documents/download?url=${encodeURIComponent(document.downloadUrl)}&filename=${encodeURIComponent(`${document.title}.${document.fileType}`)}`}
           id={`document-download-${document.id}`}
-          className="flex items-center gap-2 px-4 py-2 bg-accent/10 text-accent rounded-lg text-xs font-bold hover:bg-accent hover:text-white transition-all"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-accent/10 text-accent rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-accent hover:text-white transition-all shadow-sm shadow-accent/5"
           download
         >
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
           </svg>
-          Download
+          Get File
         </a>
       </div>
     </div>

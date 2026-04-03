@@ -1,0 +1,16 @@
+export const dropdownStyles = {
+  container: "relative inline-block text-left w-full md:w-auto",
+  trigger: "flex items-center justify-between gap-3 px-5 py-3 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-sm hover:border-accent hover:shadow-md transition-all cursor-pointer group w-full md:w-64",
+  triggerText: "text-xs font-black text-[var(--color-fg)] uppercase tracking-widest truncate",
+  triggerLabel: "text-[10px] font-black text-[var(--color-fg)] opacity-30 uppercase tracking-[0.2em] mb-1.5 ml-1 block",
+  icon: "h-4 w-4 text-[var(--color-fg)] opacity-30 group-hover:opacity-100 group-hover:text-accent transition-all",
+  menu: "absolute right-0 mt-3 w-72 origin-top-right rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] shadow-2xl z-[100] overflow-hidden animate-in fade-in zoom-in-95 duration-200",
+  menuContent: "py-2 max-h-80 overflow-y-auto custom-scrollbar",
+  option: "flex items-center justify-between px-5 py-3.5 text-xs font-bold text-[var(--color-fg)] hover:bg-accent hover:text-white transition-all cursor-pointer",
+  optionActive: "bg-accent/10 border-l-4 border-accent text-accent",
+  optionText: "flex flex-col gap-0.5",
+  optionLabel: "font-black tracking-wide",
+  optionDescription: "text-[10px] opacity-60 font-medium",
+  checkIcon: "h-4 w-4 ml-2",
+  backdrop: "fixed inset-0 z-[90]",
+};

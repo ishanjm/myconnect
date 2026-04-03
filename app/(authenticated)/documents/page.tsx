@@ -7,6 +7,7 @@ import { CreateDocumentCategoryPayload } from "@/model/DocumentCategory";
 import { DocumentCard } from "@/components/Documents/DocumentCard";
 import { CategoryForm } from "@/components/Documents/CategoryForm";
 import { DocumentForm } from "@/components/Documents/DocumentForm";
+import { LocationDropdown } from "@/components/Documents/LocationDropdown";
 import { Modal } from "@/components/common/Modal";
 import { fetchCategoriesRequest, createCategoryRequest } from "@/store/slices/documentCategories";
 import { fetchLocationsRequest } from "@/store/slices/locations";
@@ -154,27 +155,19 @@ export default function DocumentsPage() {
               </button>
             </div>
 
-            <div className="flex items-center gap-6 bg-[var(--color-surface)] pl-6 pr-4 py-2 border border-[var(--color-border)] rounded-2xl shadow-sm">
-              <span className="text-[10px] font-black text-[var(--color-fg)] opacity-30 uppercase tracking-[0.2em]">Filter By Branch</span>
-              <select
-                id="documents-location-filter"
-                value={selectedLocationId}
-                onChange={(e) => setSelectedLocationId(e.target.value === "all" ? "all" : Number(e.target.value))}
-                className="bg-transparent text-xs font-black text-[var(--color-fg)] outline-none cursor-pointer py-1 pr-2"
-              >
-                <option value="all">Global (All Branches)</option>
-                {locations.map((loc) => (
-                  <option key={loc.id} value={loc.id}>{loc.name}</option>
-                ))}
-              </select>
-            </div>
+            <LocationDropdown 
+              id="documents-location-filter"
+              locations={locations}
+              selectedLocationId={selectedLocationId}
+              onSelect={(val) => setSelectedLocationId(val)}
+            />
           </div>
         </div>
 
         {/* Documents Grid */}
         <div 
           id="documents-grid"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pb-12"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 pb-12"
         >
           {isLoadingDocs ? (
              <div className="col-span-full py-20 flex flex-col items-center gap-6 animate-pulse">
