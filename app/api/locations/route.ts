@@ -3,6 +3,52 @@ import { Location } from '@/model/Location';
 import { verifyToken } from '@/utils/jwt';
 import { sequelize } from '@/utils/db';
 
+/**
+ * @swagger
+ * tags:
+ *   name: Locations
+ *   description: Manage branch locations
+ */
+
+/**
+ * @swagger
+ * /api/locations:
+ *   get:
+ *     summary: Get all locations for current user
+ *     tags: [Locations]
+ *     responses:
+ *       200:
+ *         description: Success
+ *       401:
+ *         description: Unauthorized
+ */
+
+/**
+ * @swagger
+ * /api/locations:
+ *   post:
+ *     summary: Create a new location
+ *     tags: [Locations]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name: { type: string }
+ *               code: { type: string }
+ *               address: { type: string }
+ *               city: { type: string }
+ *               zipCode: { type: string }
+ *               status: { type: string, enum: [active, inactive] }
+ *     responses:
+ *       201:
+ *         description: Created
+ *       400:
+ *         description: Bad Request
+ */
+
 async function validateToken(req: Request) {
   const accessToken = req.headers.get('cookie')?.split('; ').find(c => c.startsWith('access_token='))?.split('=')[1];
   if (!accessToken) return null;

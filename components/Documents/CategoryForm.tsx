@@ -32,14 +32,14 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ id, onSubmit, isLoad
         <Form id={id} className="space-y-4">
           <FormikTextField
             name="name"
-            label="Category Name"
-            placeholder="e.g. Health & Safety"
+            label="Folder / Category Name"
+            placeholder="e.g. Finance, Project Assets, or Internal Guides"
             id={`${id}-name`}
           />
           <FormikTextField
             name="description"
             label="Description"
-            placeholder="Briefly describe what this category covers..."
+            placeholder="Briefly describe the purpose of this collection..."
             id={`${id}-description`}
           />
 
@@ -54,7 +54,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ id, onSubmit, isLoad
                   : "bg-accent hover:opacity-90 shadow-accent/20"
               }`}
             >
-              {isLoading ? "Creating..." : "Create Category"}
+              {isLoading ? "Saving..." : "Save Collection"}
             </button>
           </div>
         </Form>

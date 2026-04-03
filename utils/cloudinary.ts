@@ -13,21 +13,23 @@ cloudinary.config({
  * Uploads a file buffer to Cloudinary and returns the secure URL.
  * @param buffer - The file as a Buffer
  * @param folder - The Cloudinary folder to upload into
- * @returns The secure URL of the uploaded image
+ * @param resourceType - The resource type (image, raw, auto)
+ * @param transformation - Optional transformations
+ * @returns The secure URL of the uploaded asset
  */
 export async function uploadToCloudinary(
   buffer: Buffer,
-  folder: string = 'myconnect/profiles'
+  folder: string = 'myconnect/profiles',
+  resourceType: 'image' | 'video' | 'raw' | 'auto' = 'image',
+  transformation: any[] = []
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     cloudinary.uploader
       .upload_stream(
         {
           folder,
-          resource_type: 'image',
-          transformation: [
-            { width: 400, height: 400, crop: 'fill', gravity: 'face' },
-          ],
+          resource_type: resourceType,
+          transformation: transformation,
         },
         (error, result) => {
           if (error) {

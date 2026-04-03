@@ -3,6 +3,49 @@ import { DocumentCategory } from '@/model/DocumentCategory';
 import { verifyToken } from '@/utils/jwt';
 import { sequelize } from '@/utils/db';
 
+/**
+ * @swagger
+ * tags:
+ *   name: Document Categories
+ *   description: Dynamic categorization for company documents
+ */
+
+/**
+ * @swagger
+ * /api/document-categories:
+ *   get:
+ *     summary: Fetch all document categories for the current user
+ *     tags: [Document Categories]
+ *     responses:
+ *       200:
+ *         description: Success
+ *       401:
+ *         description: Unauthorized
+ */
+
+/**
+ * @swagger
+ * /api/document-categories:
+ *   post:
+ *     summary: Create a new document category
+ *     tags: [Document Categories]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name]
+ *             properties:
+ *               name: { type: string, example: "HR" }
+ *               description: { type: string, example: "Human Resources policies" }
+ *     responses:
+ *       201:
+ *         description: Created
+ *       401:
+ *         description: Unauthorized
+ */
+
 async function validateToken(req: Request) {
   const accessToken = req.headers.get('cookie')?.split('; ').find(c => c.startsWith('access_token='))?.split('=')[1];
   if (!accessToken) return null;

@@ -64,7 +64,9 @@ export async function POST(req: Request) {
     if (profileImageFile && profileImageFile.size > 0) {
       const bytes = await profileImageFile.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      profileImageUrl = await uploadToCloudinary(buffer, 'myconnect/profiles');
+      profileImageUrl = await uploadToCloudinary(buffer, 'myconnect/profiles', 'image', [
+        { width: 400, height: 400, crop: 'fill', gravity: 'face' },
+      ]);
     }
 
     // Sync model changes with the database

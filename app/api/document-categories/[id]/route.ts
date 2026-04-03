@@ -2,6 +2,51 @@ import { NextResponse } from 'next/server';
 import { DocumentCategory } from '@/model/DocumentCategory';
 import { verifyToken } from '@/utils/jwt';
 
+/**
+ * @swagger
+ * /api/document-categories/{id}:
+ *   put:
+ *     summary: Update an existing document category
+ *     tags: [Document Categories]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name: { type: string }
+ *               description: { type: string }
+ *     responses:
+ *       200:
+ *         description: Updated
+ *       404:
+ *         description: Not Found
+ */
+
+/**
+ * @swagger
+ * /api/document-categories/{id}:
+ *   delete:
+ *     summary: Delete a document category
+ *     tags: [Document Categories]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Deleted
+ *       404:
+ *         description: Not Found
+ */
+
 async function validateToken(req: Request) {
   const accessToken = req.headers.get('cookie')?.split('; ').find(c => c.startsWith('access_token='))?.split('=')[1];
   if (!accessToken) return null;
