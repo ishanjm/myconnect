@@ -3,24 +3,27 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { 
-  fetchLocationsRequest, 
-  createLocationRequest, 
-  updateLocationRequest, 
+import {
+  fetchLocationsRequest,
+  createLocationRequest,
+  updateLocationRequest,
   deleteLocationRequest,
   clearError
 } from "@/store/slices/locations";
 import { LocationForm } from "@/components/MasterData/LocationForm";
 import { Modal } from "@/components/common/Modal";
+import { ConfirmModal } from "@/components/common/ConfirmModal";
 import { ILocation as Location } from "@/model/Location";
 
 export default function LocationsPage() {
   const dispatch = useDispatch();
   const { items, isLoading, error, isSaving } = useSelector((state: RootState) => state.locations);
-  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingLocation, setEditingLocation] = useState<Location | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [hasStartedSaving, setHasStartedSaving] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [locationToDeleteId, setLocationToDeleteId] = useState<number | null>(null);
 
   useEffect(() => {
     dispatch(fetchLocationsRequest());
@@ -38,10 +41,12 @@ export default function LocationsPage() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingLocation(null);
+    setHasStartedSaving(false);
     dispatch(clearError());
   };
 
   const handleSubmit = (values: any) => {
+    setHasStartedSaving(true);
     if (editingLocation) {
       dispatch(updateLocationRequest({ ...values, id: editingLocation.id }));
     } else {
@@ -49,22 +54,30 @@ export default function LocationsPage() {
     }
   };
 
-  // Close modal only on success (when isSaving turns false and no error)
+  // Close modal only on success after started saving (when isSaving turns false and no error)
   useEffect(() => {
-    if (!isSaving && !error && isModalOpen) {
+    if (hasStartedSaving && !isSaving && !error && isModalOpen) {
       setIsModalOpen(false);
       setEditingLocation(null);
+      setHasStartedSaving(false);
     }
-  }, [isSaving, error, isModalOpen]);
+  }, [isSaving, error, isModalOpen, hasStartedSaving]);
 
   const handleDelete = (id: number) => {
-    if (window.confirm("Are you sure you want to delete this location?")) {
-      dispatch(deleteLocationRequest(id));
+    setLocationToDeleteId(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (locationToDeleteId) {
+      dispatch(deleteLocationRequest(locationToDeleteId));
+      setIsDeleteModalOpen(false);
+      setLocationToDeleteId(null);
     }
   };
 
-  const filteredItems = items.filter(item => 
-    item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+  const filteredItems = items.filter(item =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.city?.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -150,11 +163,10 @@ export default function LocationsPage() {
                         <span className="text-sm text-[var(--color-fg)]">{location.city || "—"}</span>
                       </td>
                       <td className="px-6 py-4 text-center">
-                        <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full ${
-                          location.status === 'active' 
-                            ? 'text-emerald-500 bg-emerald-500/10' 
-                            : 'text-red-500 bg-red-500/10'
-                        }`}>
+                        <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full ${location.status === 'active'
+                          ? 'text-emerald-500 bg-emerald-500/10'
+                          : 'text-red-500 bg-red-500/10'
+                          }`}>
                           {location.status}
                         </span>
                       </td>
@@ -221,6 +233,18 @@ export default function LocationsPage() {
           />
         </div>
       </Modal>
+
+      <ConfirmModal
+        id="location-delete-confirm"
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Location?"
+        message="Are you sure you want to delete this location? This action cannot be undone."
+        confirmText="Confirm Delete"
+        variant="danger"
+        isLoading={isSaving}
+      />
     </div>
   );
 }
