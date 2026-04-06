@@ -43,6 +43,18 @@ const postsSlice = createSlice({
       state.isPosting = false;
       state.error = action.payload;
     },
+    deletePostRequest: (state, action: PayloadAction<number>) => {
+      state.isLoading = true;
+      state.error = null;
+    },
+    deletePostSuccess: (state, action: PayloadAction<number>) => {
+      state.posts = state.posts.filter((post) => post.id !== action.payload);
+      state.isLoading = false;
+    },
+    deletePostFailure: (state, action: PayloadAction<string>) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -53,6 +65,9 @@ export const {
   createPostRequest,
   createPostSuccess,
   createPostFailure,
+  deletePostRequest,
+  deletePostSuccess,
+  deletePostFailure,
 } = postsSlice.actions;
 
 export default postsSlice.reducer;

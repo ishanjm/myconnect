@@ -43,4 +43,39 @@ export async function uploadToCloudinary(
   });
 }
 
+export function getCloudinaryPublicId(url: string): string | null {
+  try {
+    const parts = url.split('/');
+    const uploadIndex = parts.indexOf('upload');
+    if (uploadIndex === -1) return null;
+    
+    const publicIdWithExt = parts.slice(uploadIndex + 2).join('/');
+    const lastDotIndex = publicIdWithExt.lastIndexOf('.');
+    
+    if (lastDotIndex === -1) return publicIdWithExt;
+    return publicIdWithExt.substring(0, lastDotIndex);
+  } catch (error) {
+    return null;
+  }
+}
+
+export async function deleteFromCloudinary(url: string): Promise<void> {
+  const publicId = getCloudinaryPublicId(url);
+  if (!publicId) {
+    console.warn('Could not extract public ID from Cloudinary URL:', url);
+    return;
+  }
+
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.destroy(publicId, (error, result) => {
+      if (error) {
+        console.error('Cloudinary deletion error:', error);
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
 export default cloudinary;

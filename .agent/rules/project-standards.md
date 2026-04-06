@@ -109,6 +109,13 @@ import Link from "next/link";
 - Use plain objects, interfaces, and function-based patterns for all logic.
 - Classes lead to hidden state and boilerplate; functional patterns are more testable and easier to reason about.
 
+## 14. Backend Services Pattern
+
+- Keep Next.js API Routes (`app/api/**/route.ts`) thin. They should act strictly as Request/Response controllers.
+- Extract complex database operations, file cleaning, and business logic into dedicated service files inside the root `services/` directory.
+- To prevent naming collisions with frontend services (e.g., `postsService.ts`), all backend business logic files MUST use the `ServerService.ts` suffix (e.g., `postsServerService.ts`).
+- Refer to [backend-services-pattern.md](file:///c:/Ishan/developments/myconnect/.agent/rules/backend-services-pattern.md) for structural rules.
+
 ---
 
 **Summary**
@@ -127,4 +134,5 @@ import Link from "next/link";
 | Styles | Define styles in **separate files**; import into components |
 | Navigation | Use **`Link`** from `next/link` for all internal links |
 | API Auth | Use `validateToken` from `common/apiAuth` for all authenticated routes |
-| Architecture | **No `class` keyword allowed anywhere** (Models, Services, Components) |
+| Architecture | **No `class` keyword allowed anywhere** (Models, Services, Components) |
+| Backend | Extract business logic from API Routes to `services/*ServerService.ts` |

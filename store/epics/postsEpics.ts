@@ -1,6 +1,6 @@
 import { combineEpics, Epic } from 'redux-observable';
 import { from, of } from 'rxjs';
-import { catchError, map, mergeMap, switchMap, filter } from 'rxjs/operators';
+import { catchError, map, switchMap, filter } from 'rxjs/operators';
 import { Action } from '@reduxjs/toolkit';
 import { 
   fetchPostsRequest, 
@@ -8,8 +8,12 @@ import {
   fetchPostsFailure,
   createPostRequest,
   createPostSuccess,
-  createPostFailure
+  createPostFailure,
+  deletePostRequest,
+  deletePostSuccess,
+  deletePostFailure
 } from '../slices/posts';
+import axios from 'axios';
 import { postsService } from '@/services/postsService';
 
 const fetchPostsEpic: Epic<Action> = (action$) =>
@@ -34,7 +38,19 @@ const createPostEpic: Epic<Action> = (action$) =>
     )
   );
 
+const deletePostEpic: Epic<Action> = (action$) =>
+  action$.pipe(
+    filter(deletePostRequest.match),
+    switchMap((action) =>
+      from(axios.delete(`/api/posts/${action.payload}`)).pipe(
+        map(() => deletePostSuccess(action.payload)),
+        catchError((error) => of(deletePostFailure(error.response?.data?.error || 'Failed to delete shoutout')))
+      )
+    )
+  );
+
 export const postsEpics = combineEpics(
   fetchPostsEpic,
-  createPostEpic
+  createPostEpic,
+  deletePostEpic
 );
