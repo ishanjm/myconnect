@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { DocumentCategory } from '@/model/DocumentCategory';
-import { verifyToken } from '@/utils/jwt';
+import { validateToken } from '@/common/apiAuth';
 
 /**
  * @swagger
@@ -45,15 +45,7 @@ import { verifyToken } from '@/utils/jwt';
  *         description: Unauthorized
  */
 
-async function validateToken(req: Request) {
-  const accessToken = req.headers.get('cookie')?.split('; ').find(c => c.startsWith('access_token='))?.split('=')[1];
-  if (!accessToken) return null;
-  try {
-    return await verifyToken(accessToken);
-  } catch {
-    return null;
-  }
-}
+
 
 export async function GET(req: Request) {
   const payload = await validateToken(req);

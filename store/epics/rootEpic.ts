@@ -2,7 +2,7 @@ import { combineEpics } from 'redux-observable';
 import { authEpic } from './authEpic';
 import { locationsEpic } from './locationsEpic';
 import { fetchCategoriesEpic, createCategoryEpic } from './documentCategoriesEpics';
-import { fetchDocumentsEpic, createDocumentEpic } from './documentsEpics';
+import { fetchDocumentsEpic, createDocumentEpic, deleteDocumentEpic } from './documentsEpics';
 
 export const rootEpic = combineEpics(
   authEpic,
@@ -10,5 +10,6 @@ export const rootEpic = combineEpics(
   fetchCategoriesEpic,
   createCategoryEpic,
   fetchDocumentsEpic,
-  createDocumentEpic
+  createDocumentEpic,
+  deleteDocumentEpic
 );

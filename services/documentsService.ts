@@ -16,5 +16,9 @@ export const documentsService = {
       },
     });
     return response.data.document;
+  },
+
+  deleteDocument: async (id: number): Promise<void> => {
+    await axios.delete(`${API_BASE}/${id}`);
   }
 };

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { Document } from '@/model/Document';
-import { verifyToken } from '@/utils/jwt';
 import { uploadToCloudinary } from '@/utils/cloudinary';
+import { validateToken } from '@/common/apiAuth';
 
 /**
  * @swagger
@@ -50,16 +50,6 @@ import { uploadToCloudinary } from '@/utils/cloudinary';
  *       401:
  *         description: Unauthorized
  */
-
-async function validateToken(req: Request) {
-  const accessToken = req.headers.get('cookie')?.split('; ').find(c => c.startsWith('access_token='))?.split('=')[1];
-  if (!accessToken) return null;
-  try {
-    return await verifyToken(accessToken);
-  } catch {
-    return null;
-  }
-}
 
 export async function GET(req: Request) {
   const payload = await validateToken(req);

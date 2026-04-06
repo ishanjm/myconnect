@@ -101,6 +101,23 @@ import Link from "next/link";
 <a href="/profile">My Profile</a>
 ```
 
+## 12. Reuse `validateToken` for API Authentication
+
+- Always use the centralized `validateToken` helper from `common/apiAuth.ts` in all authenticated Next.js API Route Handlers.
+- Do not duplicate token validation logic (checking cookies, verifying JWT) within individual route files.
+- Return a `401 Unauthorized` response immediately if `validateToken` returns `null`.
+
+```tsx
+// ✅ GOOD — uses common validateToken
+import { validateToken } from '@/common/apiAuth';
+
+export async function GET(req: Request) {
+  const payload = await validateToken(req);
+  if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  // ... proceed
+}
+```
+
 ---
 
 **Summary**
@@ -118,3 +135,4 @@ import Link from "next/link";
 | Framework | Always use **Tailwind CSS** for UI components (see [tailwind-usage.md](file:///c:/Ishan/developments/myconnect/.agent/rules/tailwind-usage.md)) |
 | Styles | Define styles in **separate files**; import into components |
 | Navigation | Use **`Link`** from `next/link` for all internal links; never use raw `<a>` tags |
+| API Auth | Use `validateToken` from `common/apiAuth` for all authenticated routes |

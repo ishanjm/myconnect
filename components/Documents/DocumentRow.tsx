@@ -1,10 +1,13 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { IDocument } from "@/model/Document";
 import { ILocation as Location } from "@/model/Location";
 import { IDocumentCategory as Category } from "@/model/DocumentCategory";
 import { getDocumentPreviewUrl } from "@/common/documentUtils";
+import { RootState } from "@/store/store";
+import { deleteDocumentRequest } from "@/store/slices/documents";
 
 interface DocumentRowProps {
   document: IDocument;
@@ -42,7 +45,12 @@ export const DocumentRow: React.FC<DocumentRowProps> = ({
   allCategories = [], 
   viewType 
 }) => {
+  const dispatch = useDispatch();
+  const { user } = useSelector((state: RootState) => state.auth);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const isOwner = user?.id === document.userId;
 
   const categoryName = useMemo(() => {
     return allCategories.find(c => c.id === document.categoryId)?.name || "Uncategorized";
@@ -80,6 +88,14 @@ export const DocumentRow: React.FC<DocumentRowProps> = ({
     xhr.send();
   };
 
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm(`Are you sure you want to delete "${document.title}"?`)) {
+      setIsDeleting(true);
+      dispatch(deleteDocumentRequest(document.id));
+    }
+  };
+
   if (viewType === "list") {
     return (
       <div 
@@ -99,23 +115,45 @@ export const DocumentRow: React.FC<DocumentRowProps> = ({
           </p>
         </div>
 
-        <button
-          onClick={handleDownload}
-          disabled={isDownloading}
-          className="p-2 text-accent hover:bg-accent hover:text-white rounded-lg transition-all disabled:opacity-50"
-          title="Download"
-        >
-          {isDownloading ? (
-             <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4" />
-             </svg>
-          ) : (
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
+        <div className="flex items-center gap-2">
+          {isOwner && (
+            <button
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-all disabled:opacity-50"
+              title="Delete"
+            >
+              {isDeleting ? (
+                <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4" />
+                </svg>
+              ) : (
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              )}
+            </button>
           )}
-        </button>
+
+          <button
+            onClick={handleDownload}
+            disabled={isDownloading}
+            className="p-2 text-accent hover:bg-accent hover:text-white rounded-lg transition-all disabled:opacity-50"
+            title="Download"
+          >
+            {isDownloading ? (
+              <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4" />
+              </svg>
+            ) : (
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+            )}
+          </button>
+        </div>
       </div>
     );
   }
@@ -157,13 +195,35 @@ export const DocumentRow: React.FC<DocumentRowProps> = ({
         </span>
       </td>
       <td className="py-4 px-4 text-right">
-        <button
-          onClick={handleDownload}
-          disabled={isDownloading}
-          className="inline-flex items-center gap-2 px-3 py-1.5 bg-accent/10 text-accent rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-accent hover:text-white transition-all disabled:opacity-50"
-        >
-          {isDownloading ? "..." : "Download"}
-        </button>
+        <div className="flex items-center justify-end gap-2">
+          {isOwner && (
+            <button
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="p-1.5 text-red-500 hover:bg-red-500/10 rounded-lg transition-all disabled:opacity-50"
+              title="Delete Document"
+            >
+              {isDeleting ? (
+                <svg className="h-3.5 w-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4" />
+                </svg>
+              ) : (
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              )}
+            </button>
+          )}
+
+          <button
+            onClick={handleDownload}
+            disabled={isDownloading}
+            className="inline-flex items-center gap-2 px-3 py-1.5 bg-accent/10 text-accent rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-accent hover:text-white transition-all disabled:opacity-50"
+          >
+            {isDownloading ? "..." : "Download"}
+          </button>
+        </div>
       </td>
     </tr>
   );

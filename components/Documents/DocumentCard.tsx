@@ -1,10 +1,13 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { IDocument } from "@/model/Document";
 import { ILocation as Location } from "@/model/Location";
 import { IDocumentCategory as Category } from "@/model/DocumentCategory";
 import { getDocumentPreviewUrl } from "@/common/documentUtils";
+import { RootState } from "@/store/store";
+import { deleteDocumentRequest } from "@/store/slices/documents";
 
 interface DocumentCardProps {
   document: IDocument;
@@ -39,7 +42,12 @@ const getFileTypeIcon = (type: IDocument["fileType"]) => {
 };
 
 export const DocumentCard: React.FC<DocumentCardProps> = ({ document, allLocations = [], allCategories = [] }) => {
+  const dispatch = useDispatch();
+  const { user } = useSelector((state: RootState) => state.auth);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  
+  const isOwner = user?.id === document.userId;
 
   const categoryName = useMemo(() => {
     return allCategories.find(c => c.id === document.categoryId)?.name || "Uncategorized";
@@ -93,6 +101,14 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ document, allLocatio
     xhr.send();
   };
 
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm(`Are you sure you want to delete "${document.title}"?`)) {
+      setIsDeleting(true);
+      dispatch(deleteDocumentRequest(document.id));
+    }
+  };
+
   return (
     <div 
       id={`document-card-${document.id}`}
@@ -139,9 +155,30 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ document, allLocatio
       </div>
 
       <div className="mt-3 pt-2.5 border-t border-[var(--color-border)] flex items-center justify-between">
-        <span className="text-[9px] font-mono font-black text-[var(--color-fg)] opacity-30">
-          {document.fileSize}
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="text-[9px] font-mono font-black text-[var(--color-fg)] opacity-30">
+            {document.fileSize}
+          </span>
+          {isOwner && (
+            <button
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="p-1.5 text-red-500 hover:bg-red-500/10 rounded-lg transition-all disabled:opacity-50"
+              title="Delete Document"
+            >
+              {isDeleting ? (
+                <svg className="h-3 w-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4" />
+                </svg>
+              ) : (
+                <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              )}
+            </button>
+          )}
+        </div>
         <button 
           id={`document-download-${document.id}`}
           onClick={handleDownload}

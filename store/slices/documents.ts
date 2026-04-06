@@ -43,12 +43,25 @@ const documentsSlice = createSlice({
       state.isSaving = false;
       state.error = action.payload;
     },
+    deleteDocumentRequest: (state, _action: PayloadAction<number>) => {
+      state.isSaving = true;
+      state.error = null;
+    },
+    deleteDocumentSuccess: (state, action: PayloadAction<number>) => {
+      state.isSaving = false;
+      state.items = state.items.filter(doc => doc.id !== action.payload);
+    },
+    deleteDocumentFailure: (state, action: PayloadAction<string>) => {
+      state.isSaving = false;
+      state.error = action.payload;
+    },
   },
 });
 
 export const {
   fetchDocumentsRequest, fetchDocumentsSuccess, fetchDocumentsFailure,
   createDocumentRequest, createDocumentSuccess, createDocumentFailure,
+  deleteDocumentRequest, deleteDocumentSuccess, deleteDocumentFailure,
 } = documentsSlice.actions;
 
 export default documentsSlice.reducer;
