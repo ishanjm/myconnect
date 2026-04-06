@@ -82,74 +82,74 @@ export const DocumentHub: React.FC<DocumentHubProps> = ({ id = "document-hub", i
       <div className={`${isTabPage ? "space-y-6" : "max-w-7xl mx-auto space-y-8"}`}>
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-4">
-            <div className="space-y-1">
-              <h1 id={`${id}-title`} className={`${isTabPage ? "text-3xl" : "text-4xl"} font-black text-[var(--color-fg)] tracking-tight`}>
-                Document Hub
-              </h1>
-              <p className="text-sm font-medium text-[var(--color-fg)] opacity-40 max-w-lg leading-relaxed">
-                Your central repository for all corporate assets, operational guidelines, and shared business documentation.
-              </p>
-            </div>
-            
+          <div className="space-y-1 flex-1">
+            <h1 id={`${id}-title`} className={`${isTabPage ? "text-3xl" : "text-4xl"} font-black text-[var(--color-fg)] tracking-tight`}>
+              Document Hub
+            </h1>
+            <p className="text-sm font-medium text-[var(--color-fg)] opacity-40 max-w-lg leading-relaxed">
+              Your central repository for all corporate assets, operational guidelines, and shared business documentation.
+            </p>
+          </div>
+
+          <div className="flex flex-col items-end gap-4 w-full md:w-auto">
             <button
               id={`${id}-add-document-btn`}
               onClick={() => setIsDocumentModalOpen(true)}
-              className="px-6 py-3 bg-accent text-white rounded-2xl font-black text-sm tracking-wide shadow-lg shadow-accent/20 hover:scale-[1.02] transition-all flex items-center gap-2"
+              className="px-6 py-3 bg-accent text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-accent/20 hover:scale-[1.02] transition-all flex items-center gap-2 w-full md:w-auto justify-center"
             >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
               </svg>
               Upload Document
             </button>
-          </div>
 
-          <div className="flex items-center gap-4 w-full md:w-auto">
-            <div className="flex items-center gap-1 bg-[var(--color-surface)] border border-[var(--color-border)] p-1 rounded-xl shadow-sm">
-              {[
-                { id: "grid", icon: (
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                  </svg>
-                ), label: "Grid View" },
-                { id: "list", icon: (
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                  </svg>
-                ), label: "List View" },
-                { id: "details", icon: (
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 2v-6m-8-4h8a2 2 0 012 2v11a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z" />
-                  </svg>
-                ), label: "Details View" },
-              ].map((v) => (
-                <button
-                  key={v.id}
-                  onClick={() => setViewType(v.id as any)}
-                  className={`p-2 rounded-lg transition-all ${
-                    viewType === v.id
-                      ? "bg-accent text-white shadow-md scale-105"
-                      : "text-[var(--color-fg)] opacity-40 hover:opacity-100 hover:bg-accent/10"
-                  }`}
-                  title={v.label}
-                >
-                  {v.icon}
-                </button>
-              ))}
-            </div>
+            <div className="flex items-center gap-4 w-full">
+              <div className="flex items-center gap-1 bg-[var(--color-surface)] border border-[var(--color-border)] p-1 rounded-xl shadow-sm">
+                {[
+                  { id: "grid", icon: (
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                    </svg>
+                  ), label: "Grid View" },
+                  { id: "list", icon: (
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                    </svg>
+                  ), label: "List View" },
+                  { id: "details", icon: (
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 2v-6m-8-4h8a2 2 0 012 2v11a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z" />
+                    </svg>
+                  ), label: "Details View" },
+                ].map((v) => (
+                  <button
+                    key={v.id}
+                    onClick={() => setViewType(v.id as any)}
+                    className={`p-2 rounded-lg transition-all ${
+                      viewType === v.id
+                        ? "bg-accent text-white shadow-md scale-105"
+                        : "text-[var(--color-fg)] opacity-40 hover:opacity-100 hover:bg-accent/10"
+                    }`}
+                    title={v.label}
+                  >
+                    {v.icon}
+                  </button>
+                ))}
+              </div>
 
-            <div className="relative flex-1 md:max-w-xs">
-              <input
-                id={`${id}-search-input`}
-                type="text"
-                placeholder="Search..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl text-sm font-bold focus:ring-2 focus:ring-accent outline-none transition-all shadow-sm"
-              />
-              <svg className="absolute left-3 top-3.5 h-4 w-4 text-[var(--color-fg)] opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+              <div className="relative flex-1 md:max-w-xs">
+                <input
+                  id={`${id}-search-input`}
+                  type="text"
+                  placeholder="Search..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl text-sm font-bold focus:ring-2 focus:ring-accent outline-none transition-all shadow-sm"
+                />
+                <svg className="absolute left-3 top-3.5 h-4 w-4 text-[var(--color-fg)] opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
             </div>
           </div>
         </div>
@@ -216,7 +216,7 @@ export const DocumentHub: React.FC<DocumentHubProps> = ({ id = "document-hub", i
           viewType === "grid" ? (
             <div 
               id={`${id}-grid`}
-              className={`grid grid-cols-1 ${isTabPage ? "md:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-3"} gap-5 pb-12`}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5 pb-12"
             >
               {filteredDocuments.map((doc) => (
                 <DocumentCard 

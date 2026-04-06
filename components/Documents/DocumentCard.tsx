@@ -96,9 +96,9 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ document, allLocatio
   return (
     <div 
       id={`document-card-${document.id}`}
-      className="group bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-3.5 hover:shadow-2xl hover:scale-[1.01] transition-all duration-500 flex flex-col h-full"
+      className="group bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl p-2.5 hover:shadow-xl hover:scale-[1.01] transition-all duration-500 flex flex-col h-full"
     >
-      <div className="relative aspect-video rounded-xl overflow-hidden bg-[var(--color-bg)] border border-[var(--color-border)] group-hover:border-accent/30 transition-all mb-3">
+      <div className="relative aspect-[16/10] rounded-lg overflow-hidden bg-[var(--color-bg)] border border-[var(--color-border)] group-hover:border-accent/30 transition-all mb-2.5">
         {previewUrl ? (
           <img 
             src={previewUrl} 
@@ -113,50 +113,52 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ document, allLocatio
         )}
         
         {/* Category Badge Over Preview */}
-        <div className="absolute top-3 right-3 z-10">
-          <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-[var(--color-surface)]/80 backdrop-blur-md shadow-sm border border-[var(--color-border)] text-[var(--color-fg)]">
+        <div className="absolute top-2 right-2 z-10">
+          <span className="text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-[var(--color-surface)]/80 backdrop-blur-md shadow-sm border border-[var(--color-border)] text-[var(--color-fg)]">
             {categoryName}
           </span>
         </div>
       </div>
 
-      <div className="flex-1">
-        <h3 className="text-sm font-black text-[var(--color-fg)] mb-0.5 line-clamp-1">
-          {document.title}
-        </h3>
-        <p className="text-[11px] text-[var(--color-fg)] opacity-40 line-clamp-1 leading-relaxed mb-2">
+      <div className="flex-1 px-0.5">
+        <div className="flex items-start justify-between gap-2 mb-1">
+          <h3 className="text-[13px] font-black text-[var(--color-fg)] line-clamp-1 leading-tight flex-1">
+            {document.title}
+          </h3>
+          <div className="flex flex-wrap justify-end gap-1 shrink-0 mt-0.5">
+            {mappedLocationNames.map((name, idx) => (
+              <span key={idx} className="text-[7.5px] font-bold px-1 py-0.25 rounded-md bg-accent/5 text-accent border border-accent/10 uppercase tracking-tighter whitespace-nowrap">
+                {name}
+              </span>
+            ))}
+          </div>
+        </div>
+        <p className="text-[10px] text-[var(--color-fg)] opacity-40 line-clamp-1 leading-tight">
           {document.description}
         </p>
-        <div className="flex flex-wrap gap-1.5">
-          {mappedLocationNames.map((name, idx) => (
-            <span key={idx} className="text-[9px] font-bold px-2 py-0.5 rounded bg-accent/5 text-accent border border-accent/10 uppercase tracking-tighter">
-              {name}
-            </span>
-          ))}
-        </div>
       </div>
 
-      <div className="mt-4 pt-3 border-t border-[var(--color-border)] flex items-center justify-between">
-        <span className="text-[10px] font-mono font-black text-[var(--color-fg)] opacity-30">
+      <div className="mt-3 pt-2.5 border-t border-[var(--color-border)] flex items-center justify-between">
+        <span className="text-[9px] font-mono font-black text-[var(--color-fg)] opacity-30">
           {document.fileSize}
         </span>
         <button 
           id={`document-download-${document.id}`}
           onClick={handleDownload}
           disabled={isDownloading}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-accent/10 text-accent rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-accent hover:text-white transition-all shadow-sm shadow-accent/5 disabled:opacity-50 disabled:cursor-wait"
+          className="flex items-center gap-1 px-2.5 py-1.5 bg-accent/10 text-accent rounded-lg text-[9px] font-black uppercase tracking-wider hover:bg-accent hover:text-white transition-all shadow-sm shadow-accent/5 disabled:opacity-50 disabled:cursor-wait"
         >
           {isDownloading ? (
-            <svg className="h-3.5 w-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+            <svg className="h-3 w-3 animate-spin" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4" />
             </svg>
           ) : (
-            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
           )}
-          {isDownloading ? "Saving..." : "Get File"}
+          {isDownloading ? "..." : "Get"}
         </button>
       </div>
     </div>
