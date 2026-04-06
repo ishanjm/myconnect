@@ -1,9 +1,10 @@
 "use client";
 
-import { Post } from "@/model/Post";
+import { Post, PostAttributes } from "@/model/Post";
 import { useState } from "react";
 
-function timeAgo(dateStr: string) {
+function timeAgo(dateStr: string | Date | undefined) {
+  if (!dateStr) return "";
   const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
   if (diff < 60) return `${diff}s ago`;
   if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
@@ -11,7 +12,7 @@ function timeAgo(dateStr: string) {
   return `${Math.floor(diff / 86400)}d ago`;
 }
 
-export default function PostCard({ post }: { post: Post }) {
+export default function PostCard({ post }: { post: PostAttributes }) {
   const [liked, setLiked] = useState(false);
   const reactions = post.reactions || { likes: 0, comments: 0, shares: 0 };
   const [likeCount, setLikeCount] = useState(reactions.likes);
@@ -45,7 +46,7 @@ export default function PostCard({ post }: { post: Post }) {
               )}
             </div>
             <p className="text-xs text-[var(--color-fg)] opacity-50">
-              {timeAgo(typeof post.createdAt === 'string' ? post.createdAt : post.createdAt.toISOString())}
+              {timeAgo(post.createdAt ? (typeof post.createdAt === 'string' ? post.createdAt : post.createdAt.toISOString()) : new Date().toISOString())}
             </p>
           </div>
         </div>

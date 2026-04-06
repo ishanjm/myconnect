@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Post } from '@/model/Post';
+import { Post, PostAttributes } from '@/model/Post';
 
 interface PostsState {
-  posts: Post[];
+  posts: PostAttributes[];
   isLoading: boolean;
   isPosting: boolean;
   error: string | null;
@@ -23,7 +23,7 @@ const postsSlice = createSlice({
       state.isLoading = true;
       state.error = null;
     },
-    fetchPostsSuccess: (state, action: PayloadAction<Post[]>) => {
+    fetchPostsSuccess: (state, action: PayloadAction<PostAttributes[]>) => {
       state.posts = action.payload;
       state.isLoading = false;
     },
@@ -35,7 +35,7 @@ const postsSlice = createSlice({
       state.isPosting = true;
       state.error = null;
     },
-    createPostSuccess: (state, action: PayloadAction<Post>) => {
+    createPostSuccess: (state, action: PayloadAction<PostAttributes>) => {
       state.posts = [action.payload, ...state.posts];
       state.isPosting = false;
     },

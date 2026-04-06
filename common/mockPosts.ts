@@ -1,6 +1,6 @@
-import { Post, IPost } from "@/model/Post";
+import { PostAttributes } from "@/model/Post";
  
-export const MOCK_POSTS: IPost[] = [
+export const MOCK_POSTS: PostAttributes[] = [
   {
     id: 1,
     userId: 1, // Added missing property

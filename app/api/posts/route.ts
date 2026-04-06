@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { Post } from '@/model/Post';
-import { User } from '@/model/User';
+import { Post, PostAttributes } from '@/model/Post';
+import { User, UserAttributes } from '@/model/User';
 import { validateToken } from '@/common/apiAuth';
 import { uploadToCloudinary } from '@/utils/cloudinary';
 import { syncDB } from '@/utils/db';
@@ -28,7 +28,7 @@ export async function GET(req: Request) {
 
     // Manually attach user info for now or use associations if defined
     const postsWithAuthor = await Promise.all(posts.map(async (post: any) => {
-      const user = await User.findByPk(post.userId);
+      const user = await User.findByPk(post.userId) as unknown as UserAttributes | null;
       return {
         ...post.toJSON(),
         author: {
@@ -79,7 +79,7 @@ export async function POST(req: Request) {
       userId: payload.id
     });
 
-    const user = await User.findByPk(payload.id);
+    const user = await User.findByPk(payload.id) as unknown as UserAttributes | null;
 
     return NextResponse.json({ 
       post: {

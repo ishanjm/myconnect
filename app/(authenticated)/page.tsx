@@ -1,14 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import PostCreator from "@/components/PostCreator/PostCreator";
 import PostCard from "@/components/PostCard/PostCard";
-import { MOCK_POSTS } from "@/common/mockPosts";
 import { SidebarCards } from "@/components/Sidebar/SidebarCards";
 import { DocumentHub } from "@/components/Documents/DocumentHub";
+import { RootState } from "@/store/store";
+import { fetchPostsRequest } from "@/store/slices/posts";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("All Posts");
+  const dispatch = useDispatch();
+  const { posts, isLoading, error } = useSelector((state: RootState) => state.posts);
+  
+  useEffect(() => {
+    dispatch(fetchPostsRequest());
+  }, [dispatch]);
   
   const tabs = ["All Posts", "Following", "Trending", "Docs"];
 
@@ -90,9 +98,37 @@ export default function Home() {
                 
                 {/* Post Wall */}
                 <div id="home-post-wall" className="space-y-4">
-                  {MOCK_POSTS.map((post) => (
-                    <PostCard key={post.id} post={post} />
-                  ))}
+                  {isLoading ? (
+                    <div id="home-posts-loading" className="flex flex-col gap-4">
+                      {[1, 2, 3].map((i) => (
+                        <div key={i} className="h-40 w-full animate-pulse rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)]" />
+                      ))}
+                    </div>
+                  ) : error ? (
+                    <div id="home-posts-error" className="rounded-2xl border border-red-200 bg-red-50 p-8 text-center text-red-600">
+                      <p>Failed to load posts. Please try again later.</p>
+                      <button 
+                        onClick={() => dispatch(fetchPostsRequest())}
+                        className="mt-2 text-sm font-bold underline"
+                      >
+                        Retry
+                      </button>
+                    </div>
+                  ) : posts.length === 0 ? (
+                    <div id="home-posts-empty" className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-12 text-center">
+                      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent/10 text-accent">
+                        <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-lg font-bold text-[var(--color-fg)]">No shoutouts yet</h3>
+                      <p className="mt-1 text-sm text-[var(--color-fg)] opacity-60">Be the first to share something with the community!</p>
+                    </div>
+                  ) : (
+                    posts.map((post) => (
+                      <PostCard key={post.id} post={post} />
+                    ))
+                  )}
                 </div>
 
                 {/* Load More */}

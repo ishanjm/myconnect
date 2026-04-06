@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { Document } from '@/model/Document';
+import { Document, IDocument } from '@/model/Document';
 import { validateToken } from '@/common/apiAuth';
 
 /**
@@ -30,8 +30,8 @@ export async function DELETE(
   if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    const documentId = Number(params.id);
-    const document = await Document.findByPk(documentId);
+    const documentId = Number((await params).id);
+    const document = await Document.findByPk(documentId) as unknown as IDocument & { destroy: () => Promise<void> } | null;
 
     if (!document) {
       return NextResponse.json({ error: 'Document not found' }, { status: 404 });
