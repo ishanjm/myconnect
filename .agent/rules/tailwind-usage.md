@@ -43,15 +43,20 @@ Always design for mobile first. Use Tailwind's responsive prefixes (`sm:`, `md:`
 - **Grid**: Use `grid`, `grid-cols-N`, `gap-N`.
 - For centering content: `flex items-center justify-center`.
 
-## 6. Dark Mode
-The project uses `data-theme="dark"` on the `html` element. Styles should automatically adapt via semantic variables. However, if you need theme-specific manual overrides:
+## 6. Theme Optimization (Dark & Light)
+The project uses `data-theme="dark"` on the `html` element. Styles should automatically adapt via semantic variables. Follow these rules for professional theme support:
 
-- Use `dark:` prefix ONLY if the semantic variables are insufficient.
+- **Avoid Hardcoded Colors**: Never use `bg-white` or `text-black`. Use `bg-[var(--color-bg)]` and `text-[var(--color-fg)]`.
+- **Surface Elevation**: In dark mode, use `--color-surface` for cards and modals to create visual depth and "elevation" against the background.
+- **Subtle Borders**: Use `border-[var(--color-border)]` for dividers. It automatically adjusts opacity based on the active theme.
+- **Opacity for Hierarchy**: Instead of multiple shades of gray, use opacity on the primary foreground color for secondary text (e.g., `text-[var(--color-fg)]/60`).
+- **Accent Consistency**: Use `text-accent` for primary actions. The accent color is automatically tuned for optimal contrast in both themes.
 
 ---
 
 **Summary**
-- Prioritize utility classes.
-- Use `var(--color-*)` based classes for main UI components.
+- Prioritize utility classes and **semantic CSS variables**.
+- Use `--color-surface` for secondary containers to maintain depth in dark mode.
 - Mobile-first responsive design.
 - Stick to the standard scale for spacing and rounding.
+- Avoid `dark:` prefix unless semantic tokens are insufficient.

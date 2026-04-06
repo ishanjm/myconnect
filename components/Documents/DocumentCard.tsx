@@ -149,14 +149,14 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ document, allLocatio
             ))}
           </div>
         </div>
-        <p className="text-[10px] text-[var(--color-fg)] opacity-40 line-clamp-1 leading-tight">
+        <p className="text-[10px] text-[var(--color-fg)]/40 line-clamp-1 leading-tight">
           {document.description}
         </p>
       </div>
 
       <div className="mt-3 pt-2.5 border-t border-[var(--color-border)] flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="text-[9px] font-mono font-black text-[var(--color-fg)] opacity-30">
+          <span className="text-[9px] font-mono font-black text-[var(--color-fg)]/30">
             {document.fileSize}
           </span>
           {isOwner && (
