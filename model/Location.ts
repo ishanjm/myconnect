@@ -1,4 +1,4 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../utils/db';
 
 export interface ILocation {
@@ -28,21 +28,10 @@ export interface UpdateLocationPayload extends Partial<CreateLocationPayload> {
   id: number;
 }
 
-export class Location extends Model implements ILocation {
-  public id!: number;
-  public name!: string;
-  public code!: string;
-  public address!: string | null;
-  public city!: string | null;
-  public zipCode!: string | null;
-  public status!: 'active' | 'inactive';
-  public userId!: number;
+interface LocationCreationAttributes extends Optional<ILocation, 'id' | 'address' | 'city' | 'zipCode' | 'status' | 'userId' | 'createdAt' | 'updatedAt'> {}
 
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
-}
-
-Location.init(
+const Location = sequelize.define<Model<ILocation, LocationCreationAttributes>>(
+  'Location',
   {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -81,7 +70,9 @@ Location.init(
     },
   },
   {
-    sequelize,
     tableName: 'locations',
   }
 );
+
+export default Location;
+export { Location };

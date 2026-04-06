@@ -69,10 +69,12 @@ const validationSchema = yup.object({ email: yup.string().email().required() });
 - Use them instead of one-off inline elements (e.g. use a shared `<AppButton />` rather than raw HTML `<button>` styled everywhere).
 - Ensures consistency and easier QA (IDs can be set once on the reusable component).
 
-## 8. Function Components Only (No Class Components)
+## 8. Function-Based Architecture (No Classes)
 
-- Use **function components** and hooks for all React components. Do not use class components (`class X extends React.Component`) or class-based services.
+- Use **function components** and hooks for all React components. Do not use class components (`class X extends React.Component`). 
+- Do not define any **classes** (`class X { ... }`) for internal logic, services, or models.
 - For API/services: export plain **async functions** from service modules (e.g. `export async function createUser(...)`) instead of class instances.
+- For Sequelize models: Use **functional definitions** (e.g., `sequelize.define`) instead of class-based inheritance.
 
 ## 9. tailwind for UI
 
@@ -101,22 +103,11 @@ import Link from "next/link";
 <a href="/profile">My Profile</a>
 ```
 
-## 12. Reuse `validateToken` for API Authentication
+## 13. No Class Definitions Allowed
 
-- Always use the centralized `validateToken` helper from `common/apiAuth.ts` in all authenticated Next.js API Route Handlers.
-- Do not duplicate token validation logic (checking cookies, verifying JWT) within individual route files.
-- Return a `401 Unauthorized` response immediately if `validateToken` returns `null`.
-
-```tsx
-// ✅ GOOD — uses common validateToken
-import { validateToken } from '@/common/apiAuth';
-
-export async function GET(req: Request) {
-  const payload = await validateToken(req);
-  if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  // ... proceed
-}
-```
+- To ensure consistent, functional patterns across the codebase, **do not use the `class` keyword** to define objects, services, or models.
+- Use plain objects, interfaces, and function-based patterns for all logic.
+- Classes lead to hidden state and boilerplate; functional patterns are more testable and easier to reason about.
 
 ---
 
@@ -131,8 +122,9 @@ export async function GET(req: Request) {
 | Methods | Put shared logic in the **common** folder |
 | Forms | Use Formik + Yup for all forms |
 | UI | Use reusable components from the components folder |
-| Components | **Function components only**; no class components; services as plain async functions |
-| Framework | Always use **Tailwind CSS** for UI components (see [tailwind-usage.md](file:///c:/Ishan/developments/myconnect/.agent/rules/tailwind-usage.md)) |
+| Functionality | **Strictly no classes**; function components and async functions only |
+| Framework | Always use **Tailwind CSS** for UI components |
 | Styles | Define styles in **separate files**; import into components |
-| Navigation | Use **`Link`** from `next/link` for all internal links; never use raw `<a>` tags |
+| Navigation | Use **`Link`** from `next/link` for all internal links |
 | API Auth | Use `validateToken` from `common/apiAuth` for all authenticated routes |
+| Architecture | **No `class` keyword allowed anywhere** (Models, Services, Components) |

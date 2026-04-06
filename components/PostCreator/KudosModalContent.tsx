@@ -4,6 +4,7 @@ import React from "react";
 import { useFormik, FormikProvider } from "formik";
 import * as Yup from "yup";
 import { FormikTextField } from "../inputs/FormikTextField";
+import { FormikTextArea } from "../inputs/FormikTextArea";
 
 interface KudosModalContentProps {
   onSuccess: () => void;
@@ -102,11 +103,12 @@ export const KudosModalContent: React.FC<KudosModalContentProps> = ({ onSuccess 
 
         {/* Message */}
         <div id="kudos-form-message-section">
-          <FormikTextField
+          <FormikTextArea
             id="kudos-form-message-input"
             name="message"
             label="What's the achievement?"
             placeholder="e.g. Thanks for going above and beyond on the project launch!"
+            rows={4}
           />
         </div>
 

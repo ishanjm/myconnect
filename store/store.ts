@@ -15,6 +15,7 @@ import authReducer from './slices/auth';
 import locationsReducer from './slices/locations';
 import documentCategoriesReducer from './slices/documentCategories';
 import documentsReducer from './slices/documents';
+import postsReducer from './slices/posts';
 import { rootEpic } from './epics/rootEpic';
 
 const rootReducer = combineReducers({
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   locations: locationsReducer,
   documentCategories: documentCategoriesReducer,
   documents: documentsReducer,
+  posts: postsReducer,
 });
 
 const persistConfig = {
@@ -44,6 +46,7 @@ export const store = configureStore({
         ignoredActions: [
           'auth/registerRequest',
           'documents/createDocumentRequest',
+          'posts/createPostRequest',
           FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER
         ],
       },

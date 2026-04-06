@@ -1,4 +1,4 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../utils/db';
 
 export interface IDocument {
@@ -17,22 +17,10 @@ export interface IDocument {
 
 export type DocumentFileType = string;
 
-export class Document extends Model implements IDocument {
-  public id!: number;
-  public title!: string;
-  public description!: string;
-  public categoryId!: number;
-  public fileType!: string;
-  public fileSize!: string;
-  public downloadUrl!: string;
-  public locationIds!: number[];
-  public userId!: number;
+interface DocumentCreationAttributes extends Optional<IDocument, 'id' | 'locationIds' | 'createdAt' | 'updatedAt'> {}
 
-  public readonly createdAt!: string;
-  public readonly updatedAt!: string;
-}
-
-Document.init(
+const Document = sequelize.define<Model<IDocument, DocumentCreationAttributes>>(
+  'Document',
   {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -74,7 +62,9 @@ Document.init(
     },
   },
   {
-    sequelize,
     tableName: 'documents',
   }
 );
+
+export default Document;
+export { Document };

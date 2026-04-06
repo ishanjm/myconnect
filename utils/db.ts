@@ -18,7 +18,6 @@ export const sequelize = new Sequelize(
     },
     pool: {
       max: 5,
-      min: 0,
       acquire: 30000,
       idle: 10000,
     },
@@ -26,16 +25,32 @@ export const sequelize = new Sequelize(
   }
 );
 
+// Initialization flag
 let isInitialSync = false;
+
+/**
+ * Synchronize the database.
+ * Explicitly import models here to ensure they are registered with Sequelize before sync.
+ */
 export const syncDB = async (force = false) => {
   if (isInitialSync && !force) return;
+  
   try {
+    // Dynamic imports to avoid circular dependencies and ensure models are registered
+    await import('../model/User');
+    await import('../model/Post');
+    await import('../model/Document');
+    await import('../model/Location');
+    await import('../model/DocumentCategory');
+
     await sequelize.authenticate();
-    await sequelize.sync({ force });
+    // Use alter: true in dev to sync changes without dropping data
+    await sequelize.sync({ force, alter: !force });
+    
     isInitialSync = true;
-    console.log(`Database synchronized successfully (force: ${force})`);
+    console.log(`[Database] Synchronized successfully (force: ${force}, alter: ${!force})`);
   } catch (error) {
-    console.error('Unable to synchronize database:', error);
+    console.error('[Database] Sync failed:', error);
     throw error;
   }
 };

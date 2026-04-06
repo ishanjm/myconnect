@@ -1,6 +1,7 @@
 import { Epic, ofType, combineEpics } from 'redux-observable';
 import { mergeMap, map, catchError, switchMap } from 'rxjs/operators';
 import { of, from } from 'rxjs';
+import { Action } from '@reduxjs/toolkit';
 import {
   fetchLocationsRequest, fetchLocationsSuccess, fetchLocationsFailure,
   createLocationRequest, createLocationSuccess, createLocationFailure,
@@ -9,7 +10,7 @@ import {
 } from '../slices/locations';
 import * as locApi from '@/services/locationsService';
 
-const fetchLocationsEpic: Epic = (action$) =>
+const fetchLocationsEpic: Epic<Action> = (action$) =>
   action$.pipe(
     ofType(fetchLocationsRequest.type),
     switchMap(() =>
@@ -20,7 +21,7 @@ const fetchLocationsEpic: Epic = (action$) =>
     )
   );
 
-const createLocationEpic: Epic = (action$) =>
+const createLocationEpic: Epic<Action> = (action$) =>
   action$.pipe(
     ofType(createLocationRequest.type),
     mergeMap((action: any) =>
@@ -31,7 +32,7 @@ const createLocationEpic: Epic = (action$) =>
     )
   );
 
-const updateLocationEpic: Epic = (action$) =>
+const updateLocationEpic: Epic<Action> = (action$) =>
   action$.pipe(
     ofType(updateLocationRequest.type),
     mergeMap((action: any) =>
@@ -42,7 +43,7 @@ const updateLocationEpic: Epic = (action$) =>
     )
   );
 
-const deleteLocationEpic: Epic = (action$) =>
+const deleteLocationEpic: Epic<Action> = (action$) =>
   action$.pipe(
     ofType(deleteLocationRequest.type),
     mergeMap((action: any) =>

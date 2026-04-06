@@ -1,4 +1,4 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../utils/db';
 
 export interface IDocumentCategory {
@@ -15,17 +15,10 @@ export interface CreateDocumentCategoryPayload {
   description?: string;
 }
 
-export class DocumentCategory extends Model implements IDocumentCategory {
-  public id!: number;
-  public name!: string;
-  public description!: string;
-  public userId!: number;
+interface DocumentCategoryCreationAttributes extends Optional<IDocumentCategory, 'id' | 'description' | 'createdAt' | 'updatedAt'> {}
 
-  public readonly createdAt!: string;
-  public readonly updatedAt!: string;
-}
-
-DocumentCategory.init(
+const DocumentCategory = sequelize.define<Model<IDocumentCategory, DocumentCategoryCreationAttributes>>(
+  'DocumentCategory',
   {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -46,7 +39,9 @@ DocumentCategory.init(
     },
   },
   {
-    sequelize,
     tableName: 'document_categories',
   }
 );
+
+export default DocumentCategory;
+export { DocumentCategory };

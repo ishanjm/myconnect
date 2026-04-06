@@ -1,6 +1,7 @@
 import { ofType, Epic } from 'redux-observable';
 import { from, of } from 'rxjs';
 import { mergeMap, map, catchError, filter } from 'rxjs/operators';
+import { Action } from '@reduxjs/toolkit';
 import { RootState } from '../store';
 import { 
   fetchCategoriesRequest, fetchCategoriesSuccess, fetchCategoriesFailure,
@@ -8,7 +9,7 @@ import {
 } from '../slices/documentCategories';
 import { documentCategoriesService } from '@/services/documentCategoriesService';
 
-export const fetchCategoriesEpic: Epic = (action$) =>
+export const fetchCategoriesEpic: Epic<Action> = (action$) =>
   action$.pipe(
     ofType(fetchCategoriesRequest.type),
     mergeMap(() =>
@@ -19,7 +20,7 @@ export const fetchCategoriesEpic: Epic = (action$) =>
     )
   );
 
-export const createCategoryEpic: Epic = (action$) =>
+export const createCategoryEpic: Epic<Action> = (action$) =>
   action$.pipe(
     ofType(createCategoryRequest.type),
     mergeMap((action: any) =>

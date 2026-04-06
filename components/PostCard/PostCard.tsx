@@ -1,6 +1,6 @@
 "use client";
 
-import { Post } from "@/model/post";
+import { Post } from "@/model/Post";
 import { useState } from "react";
 
 function timeAgo(dateStr: string) {
@@ -13,7 +13,8 @@ function timeAgo(dateStr: string) {
 
 export default function PostCard({ post }: { post: Post }) {
   const [liked, setLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(post.reactions.likes);
+  const reactions = post.reactions || { likes: 0, comments: 0, shares: 0 };
+  const [likeCount, setLikeCount] = useState(reactions.likes);
 
   const handleLike = () => {
     setLiked((prev) => !prev);
@@ -30,20 +31,22 @@ export default function PostCard({ post }: { post: Post }) {
         <div className="flex items-center gap-3">
           <img
             id={`home-post-card-${post.id}-avatar`}
-            src={post.author.avatarUrl}
-            alt={post.author.name}
+            src={post.author?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author?.name || 'User')}&background=random&color=fff`}
+            alt={post.author?.name || "User"}
             className="h-10 w-10 rounded-full object-cover ring-2 ring-accent/20"
           />
           <div>
             <div className="flex items-center gap-2">
-              <p className="text-sm font-bold text-[var(--color-fg)]">{post.author.name}</p>
-              {post.author.subscription && (
+              <p className="text-sm font-bold text-[var(--color-fg)]">{post.author?.name || "Unknown User"}</p>
+              {post.author?.subscription && (
                 <span className="text-[9px] font-black uppercase tracking-widest text-accent bg-accent/10 px-1.5 py-0.5 rounded-full">
                   {post.author.subscription}
                 </span>
               )}
             </div>
-            <p className="text-xs text-[var(--color-fg)] opacity-50">{timeAgo(post.createdAt)}</p>
+            <p className="text-xs text-[var(--color-fg)] opacity-50">
+              {timeAgo(typeof post.createdAt === 'string' ? post.createdAt : post.createdAt.toISOString())}
+            </p>
           </div>
         </div>
 
@@ -63,7 +66,7 @@ export default function PostCard({ post }: { post: Post }) {
         <p className="text-sm leading-relaxed text-[var(--color-fg)] opacity-90">{post.content}</p>
         {post.tags && post.tags.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-1.5">
-            {post.tags.map((tag) => (
+            {post.tags.map((tag: string) => (
               <span
                 key={tag}
                 className="text-[11px] font-semibold text-accent cursor-pointer hover:underline"
@@ -87,10 +90,9 @@ export default function PostCard({ post }: { post: Post }) {
         </div>
       )}
 
-      {/* Reaction Counts */}
       <div className="flex items-center justify-between px-4 py-2 text-xs text-[var(--color-fg)] opacity-50 border-t border-[var(--color-border)]">
         <span>{likeCount} likes</span>
-        <span>{post.reactions.comments} comments · {post.reactions.shares} shares</span>
+        <span>{reactions.comments} comments · {reactions.shares} shares</span>
       </div>
 
       {/* Action Buttons */}

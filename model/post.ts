@@ -1,3 +1,6 @@
+import { DataTypes, Model, Optional } from 'sequelize';
+import { sequelize } from '../utils/db';
+
 export interface PostAuthor {
   id: number;
   name: string;
@@ -11,12 +14,51 @@ export interface PostReaction {
   shares: number;
 }
 
-export interface Post {
+export interface PostAttributes {
   id: number;
-  author: PostAuthor;
   content: string;
-  imageUrl?: string;
-  createdAt: string;
-  reactions: PostReaction;
+  imageUrl?: string | null;
+  userId: number;
   tags?: string[];
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
+  // Computed or associated properties (not in DB table directly usually, or handled as associations)
+  author?: PostAuthor;
+  reactions?: PostReaction;
 }
+
+export interface PostCreationAttributes extends Optional<PostAttributes, 'id' | 'imageUrl' | 'tags' | 'createdAt' | 'updatedAt' | 'author' | 'reactions'> {}
+
+const Post = sequelize.define<Model<PostAttributes, PostCreationAttributes>>(
+  'Post',
+  {
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    content: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    imageUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    userId: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
+    },
+    tags: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: [],
+    },
+  },
+  {
+    tableName: 'posts',
+  }
+);
+
+export default Post;
+export { Post };

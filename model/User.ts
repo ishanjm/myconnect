@@ -1,25 +1,27 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../utils/db';
 import { UserRole } from './auth';
 
-export class User extends Model {
-  public id!: number;
-  public email!: string;
-  public password!: string;
-  public firstName!: string;
-  public lastName!: string;
-  public subscription!: 'trial' | 'small' | 'medium' | 'large' | 'custom';
-  public address!: string | null;
-  public mobileNumber!: string | null;
-  public profileImage!: string | null;
-  public name!: string;
-  public role!: UserRole;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+export interface UserAttributes {
+  id: number;
+  email: string;
+  password?: string;
+  firstName: string;
+  lastName: string;
+  subscription: 'trial' | 'small' | 'medium' | 'large' | 'custom';
+  address: string | null;
+  mobileNumber: string | null;
+  profileImage: string | null;
+  name: string;
+  role: UserRole;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-User.init(
+export interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'password' | 'address' | 'mobileNumber' | 'profileImage' | 'name' | 'role' | 'createdAt' | 'updatedAt'> {}
+
+const User = sequelize.define<Model<UserAttributes, UserCreationAttributes>>(
+  'User',
   {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -70,7 +72,9 @@ User.init(
     },
   },
   {
-    sequelize,
     tableName: 'users',
   }
 );
+
+export default User;
+export { User };

@@ -1,6 +1,7 @@
 import { Epic, ofType, combineEpics } from 'redux-observable';
 import { mergeMap, map, catchError, switchMap } from 'rxjs/operators';
 import { of, from } from 'rxjs';
+import { Action } from '@reduxjs/toolkit';
 import { 
   loginRequest, loginSuccess, loginFailure, 
   registerRequest, registerSuccess, registerFailure,
@@ -9,7 +10,7 @@ import {
 } from '../slices/auth';
 import { loginApi, registerApi, logoutApi, meApi } from '@/services/authService';
 
-const loginEpic: Epic = (action$) =>
+const loginEpic: Epic<Action> = (action$) =>
   action$.pipe(
     ofType(loginRequest.type),
     mergeMap((action: any) =>
@@ -28,7 +29,7 @@ const loginEpic: Epic = (action$) =>
     )
   );
 
-const registerEpic: Epic = (action$) =>
+const registerEpic: Epic<Action> = (action$) =>
   action$.pipe(
     ofType(registerRequest.type),
     mergeMap((action: any) =>
@@ -47,7 +48,7 @@ const registerEpic: Epic = (action$) =>
     )
   );
 
-export const logoutEpic: Epic = (action$) =>
+export const logoutEpic: Epic<Action> = (action$) =>
   action$.pipe(
     ofType(logoutRequest.type),
     switchMap(() =>
@@ -60,7 +61,7 @@ export const logoutEpic: Epic = (action$) =>
     )
   );
 
-export const meEpic: Epic = (action$) =>
+export const meEpic: Epic<Action> = (action$) =>
   action$.pipe(
     ofType(meRequest.type),
     switchMap(() =>

@@ -1,15 +1,15 @@
 import { ofType, Epic } from 'redux-observable';
 import { from, of } from 'rxjs';
 import { mergeMap, map, catchError } from 'rxjs/operators';
+import { Action, PayloadAction } from '@reduxjs/toolkit';
 import { 
   fetchDocumentsRequest, fetchDocumentsSuccess, fetchDocumentsFailure,
   createDocumentRequest, createDocumentSuccess, createDocumentFailure,
   deleteDocumentRequest, deleteDocumentSuccess, deleteDocumentFailure
 } from '../slices/documents';
 import { documentsService } from '@/services/documentsService';
-import { PayloadAction } from '@reduxjs/toolkit';
 
-export const fetchDocumentsEpic: Epic = (action$) =>
+export const fetchDocumentsEpic: Epic<Action> = (action$) =>
   action$.pipe(
     ofType(fetchDocumentsRequest.type),
     mergeMap(() =>
@@ -20,7 +20,7 @@ export const fetchDocumentsEpic: Epic = (action$) =>
     )
   );
 
-export const createDocumentEpic: Epic = (action$) =>
+export const createDocumentEpic: Epic<Action> = (action$) =>
   action$.pipe(
     ofType(createDocumentRequest.type),
     mergeMap((action: PayloadAction<FormData>) =>
@@ -31,7 +31,7 @@ export const createDocumentEpic: Epic = (action$) =>
     )
   );
 
-export const deleteDocumentEpic: Epic = (action$) =>
+export const deleteDocumentEpic: Epic<Action> = (action$) =>
   action$.pipe(
     ofType(deleteDocumentRequest.type),
     mergeMap((action: PayloadAction<number>) =>
