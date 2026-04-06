@@ -70,7 +70,12 @@ export async function POST(req: Request) {
     if (file) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      imageUrl = await uploadToCloudinary(buffer, 'myconnect/posts', 'image');
+      // Downscale image to save space: max 1200px, auto quality/format
+      imageUrl = await uploadToCloudinary(buffer, 'myconnect/posts', 'image', [
+        { width: 1200, height: 1200, crop: 'limit' },
+        { quality: 'auto' },
+        { fetch_format: 'auto' }
+      ]);
     }
 
     const post = await Post.create({

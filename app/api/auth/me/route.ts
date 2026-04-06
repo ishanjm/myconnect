@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { verifyToken } from '@/utils/jwt';
-import { User } from '@/model/User';
+import { User, UserAttributes } from '@/model/User';
 
 /**
  * @swagger
@@ -24,7 +24,7 @@ export async function GET(req: Request) {
     }
 
     const payload = await verifyToken(accessToken);
-    const user = await User.findByPk(payload.id);
+    const user = await User.findByPk(payload.id) as unknown as UserAttributes | null;
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 401 });

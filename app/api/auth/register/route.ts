@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { User } from '@/model/User';
+import { User, UserAttributes } from '@/model/User';
 import { signAccessToken, signRefreshToken } from '@/utils/jwt';
 import { hashPassword } from '@/utils/password';
 import { uploadToCloudinary } from '@/utils/cloudinary';
@@ -65,12 +65,14 @@ export async function POST(req: Request) {
       const buffer = Buffer.from(bytes);
       profileImageUrl = await uploadToCloudinary(buffer, 'myconnect/profiles', 'image', [
         { width: 400, height: 400, crop: 'fill', gravity: 'face' },
+        { quality: 'auto' },
+        { fetch_format: 'auto' }
       ]);
     }
 
 
     // Check if user already exists
-    const existingUser = await User.findOne({ where: { email } });
+    const existingUser = await User.findOne({ where: { email } }) as unknown as UserAttributes | null;
     if (existingUser) {
       return NextResponse.json({ error: 'User already exists' }, { status: 400 });
     }
@@ -91,7 +93,7 @@ export async function POST(req: Request) {
       profileImage: profileImageUrl, 
       name, 
       role 
-    });
+    }) as unknown as UserAttributes;
 
     const userPayload = { 
       id: user.id, 
