@@ -1,9 +1,17 @@
+"use client";
+
+import { useState } from "react";
 import PostCreator from "@/components/PostCreator/PostCreator";
 import PostCard from "@/components/PostCard/PostCard";
 import { MOCK_POSTS } from "@/common/mockPosts";
 import { SidebarCards } from "@/components/Sidebar/SidebarCards";
+import { DocumentHub } from "@/components/Documents/DocumentHub";
 
 export default function Home() {
+  const [activeTab, setActiveTab] = useState("All Posts");
+  
+  const tabs = ["All Posts", "Following", "Trending", "Docs"];
+
   return (
     <div id="home-page" className="min-h-screen bg-[var(--color-bg)] px-4 py-8">
       <div className="mx-auto max-w-6xl flex flex-col lg:flex-row justify-center gap-8 items-start">
@@ -52,40 +60,52 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Post Creator */}
-          <PostCreator />
+          {/* Feed Content Area */}
+          <div className="space-y-6">
+            {/* Nav Tabs */}
+            <div id="home-feed-tabs" className="flex gap-1 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-1">
+              {tabs.map((tab) => (
+                <button
+                  key={tab}
+                  id={`home-feed-tab-${tab.toLowerCase().replace(" ", "-")}`}
+                  onClick={() => setActiveTab(tab)}
+                  className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all cursor-pointer ${activeTab === tab
+                    ? "bg-accent text-white shadow-sm"
+                    : "text-[var(--color-fg)] opacity-60 hover:opacity-100 hover:bg-accent/10"
+                    }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
 
-          {/* Feed Filter Tabs */}
-          <div id="home-feed-tabs" className="flex gap-1 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-1">
-            {["All Posts", "Following", "Trending"].map((tab, i) => (
-              <button
-                key={tab}
-                id={`home-feed-tab-${tab.toLowerCase().replace(" ", "-")}`}
-                className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all cursor-pointer ${i === 0
-                  ? "bg-accent text-white shadow-sm"
-                  : "text-[var(--color-fg)] opacity-60 hover:opacity-100 hover:bg-accent/10"
-                  }`}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
+            {/* View Switching */}
+            {activeTab === "Docs" ? (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <DocumentHub id="home-docs-tab" isTabPage={true} />
+              </div>
+            ) : (
+              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <PostCreator />
+                
+                {/* Post Wall */}
+                <div id="home-post-wall" className="space-y-4">
+                  {MOCK_POSTS.map((post) => (
+                    <PostCard key={post.id} post={post} />
+                  ))}
+                </div>
 
-          {/* Post Wall */}
-          <div id="home-post-wall" className="space-y-4">
-            {MOCK_POSTS.map((post) => (
-              <PostCard key={post.id} post={post} />
-            ))}
-          </div>
-
-          {/* Load More */}
-          <div className="flex justify-center pb-8">
-            <button
-              id="home-load-more-btn"
-              className="cursor-pointer rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-2 text-sm font-semibold text-[var(--color-fg)] opacity-70 transition-all hover:bg-accent/10 hover:opacity-100 active:scale-95"
-            >
-              Load more posts
-            </button>
+                {/* Load More */}
+                <div className="flex justify-center pb-8">
+                  <button
+                    id="home-load-more-btn"
+                    className="cursor-pointer rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-2 text-sm font-semibold text-[var(--color-fg)] opacity-70 transition-all hover:bg-accent/10 hover:opacity-100 active:scale-95"
+                  >
+                    Load more posts
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

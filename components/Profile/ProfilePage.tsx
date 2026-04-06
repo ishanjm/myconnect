@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { profilePageStyles as styles } from "./ProfilePage.styles";
+import { DocumentHub } from "../Documents/DocumentHub";
 
 export default function ProfilePage() {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -109,12 +110,9 @@ export default function ProfilePage() {
           )}
 
           {activeTab === "Docs" && (
-            <PlaceholderTab
-              id="profile-tab-docs-content"
-              title="Documentation"
-              description="Keep track of your technical documents, notes, and guides here."
-              icon="📄"
-            />
+            <div id="profile-tab-docs-content" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <DocumentHub id="profile-docs-tab" isTabPage={true} />
+            </div>
           )}
 
           {activeTab === "Ask me" && (

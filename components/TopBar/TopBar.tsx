@@ -62,10 +62,10 @@ export default function TopBar() {
     <header id="topbar" className="sticky top-0 z-50 flex h-14 items-center border-b border-border bg-surface px-4 shadow-sm backdrop-blur-xl transition-all duration-300">
       {/* 1. Left Column: Brand (takes up left space) */}
       <div id="topbar-brand-section" className="flex flex-1 items-center gap-2">
-        <div id="topbar-brand" className="flex items-center gap-2 px-2" title="my connects">
-          <span id="topbar-logo" className="text-[1.4rem] leading-none text-accent">⬡</span>
-          <span id="topbar-app-name" className="hidden lg:inline text-[1.05rem] font-bold tracking-tight text-fg">MyConnect</span>
-        </div>
+        <Link href="/" id="topbar-brand" className="flex items-center gap-2 px-2 group cursor-pointer" title="Go to home">
+          <span id="topbar-logo" className="text-[1.4rem] leading-none text-accent group-hover:scale-110 transition-transform">⬡</span>
+          <span id="topbar-app-name" className="hidden lg:inline text-[1.05rem] font-bold tracking-tight text-fg group-hover:text-accent transition-colors">MyConnect</span>
+        </Link>
       </div>
 
       {/* 2. Middle Column: Centered Navigation (icons only) */}
