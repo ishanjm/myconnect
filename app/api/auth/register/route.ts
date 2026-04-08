@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { User, UserAttributes } from '@/model/User';
-import { signAccessToken, signRefreshToken } from '@/utils/jwt';
+import { PERSISTENT_SESSION_MAX_AGE_SECONDS, signAccessToken, signRefreshToken } from '@/utils/jwt';
 import { hashPassword } from '@/utils/password';
 import { uploadToCloudinary } from '@/utils/cloudinary';
 
@@ -120,7 +120,7 @@ export async function POST(req: Request) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60, // 1 hour
+      maxAge: PERSISTENT_SESSION_MAX_AGE_SECONDS,
     });
 
     response.cookies.set('refresh_token', refreshToken, {
@@ -128,7 +128,7 @@ export async function POST(req: Request) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60 * 24 * 7, // 1 week
+      maxAge: PERSISTENT_SESSION_MAX_AGE_SECONDS,
     });
 
     return response;

@@ -16,13 +16,19 @@ export async function POST() {
   // Clear authentication cookies
   response.cookies.set('access_token', '', {
     httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
     expires: new Date(0),
+    maxAge: 0,
     path: '/',
   });
 
   response.cookies.set('refresh_token', '', {
     httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
     expires: new Date(0),
+    maxAge: 0,
     path: '/',
   });
 

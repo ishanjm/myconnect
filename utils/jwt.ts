@@ -1,5 +1,7 @@
 import { SignJWT, jwtVerify } from 'jose';
 
+export const PERSISTENT_SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 365 * 10; // 10 years
+
 const getSecretKey = () => {
   const secret = process.env.JWT_SECRET || 'fallback_default_secret_key_myconnect_2026';
   const salt = process.env.JWT_SALT || '-my-custom-salt';
@@ -10,7 +12,6 @@ export async function signAccessToken(payload: any): Promise<string> {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime('1h')
     .sign(getSecretKey());
 }
 
@@ -18,7 +19,6 @@ export async function signRefreshToken(payload: any): Promise<string> {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime('7d')
     .sign(getSecretKey());
 }
 

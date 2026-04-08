@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { signAccessToken, verifyToken } from '@/utils/jwt';
+import { PERSISTENT_SESSION_MAX_AGE_SECONDS, signAccessToken, signRefreshToken, verifyToken } from '@/utils/jwt';
 
 /**
  * @swagger
@@ -24,17 +24,38 @@ export async function POST(req: Request) {
 
     const payload = await verifyToken(refreshToken);
     
-    // Issue a new access token
+    // Re-issue tokens and extend cookie lifetime for persistent sessions
     const accessToken = await signAccessToken({ 
       id: payload.id, 
       email: payload.email, 
-      name: payload.name, 
-      role: payload.role 
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      role: payload.role,
+      subscription: payload.subscription,
+      profileImage: payload.profileImage
+    });
+
+    const refreshToken = await signRefreshToken({
+      id: payload.id,
+      email: payload.email,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      role: payload.role,
+      subscription: payload.subscription,
+      profileImage: payload.profileImage
     });
 
     const response = NextResponse.json({
       token: accessToken,
-      user: { id: payload.id, email: payload.email, name: payload.name, role: payload.role }
+      user: {
+        id: payload.id,
+        email: payload.email,
+        firstName: payload.firstName,
+        lastName: payload.lastName,
+        role: payload.role,
+        subscription: payload.subscription,
+        profileImage: payload.profileImage
+      }
     });
 
     response.cookies.set('access_token', accessToken, {
@@ -42,7 +63,15 @@ export async function POST(req: Request) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60, // 1 hour
+      maxAge: PERSISTENT_SESSION_MAX_AGE_SECONDS,
+    });
+
+    response.cookies.set('refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: PERSISTENT_SESSION_MAX_AGE_SECONDS,
     });
 
     return response;
