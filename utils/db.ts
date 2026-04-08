@@ -1,5 +1,5 @@
-import { Sequelize } from 'sequelize';
-import mysql2 from 'mysql2';
+import { Sequelize } from "sequelize";
+import mysql2 from "mysql2";
 
 export const sequelize = new Sequelize(
   process.env.DB_NAME || "myconnect",
@@ -22,7 +22,7 @@ export const sequelize = new Sequelize(
       idle: 10000,
     },
     logging: false,
-  }
+  },
 );
 
 // Initialization flag
@@ -34,23 +34,26 @@ let isInitialSync = false;
  */
 export const syncDB = async (force = false) => {
   if (isInitialSync && !force) return;
-  
+
   try {
     // Dynamic imports to avoid circular dependencies and ensure models are registered
-    await import('../model/User');
-    await import('../model/Post');
-    await import('../model/Document');
-    await import('../model/Location');
-    await import('../model/DocumentCategory');
+    await import("../model/User");
+    await import("../model/Post");
+    await import("../model/Document");
+    await import("../model/Location");
+    await import("../model/DocumentCategory");
+    await import("../model/Quiz");
 
     await sequelize.authenticate();
     // Use alter: true in dev to sync changes without dropping data
     await sequelize.sync({ force, alter: !force });
-    
+
     isInitialSync = true;
-    console.log(`[Database] Synchronized successfully (force: ${force}, alter: ${!force})`);
+    console.log(
+      `[Database] Synchronized successfully (force: ${force}, alter: ${!force})`,
+    );
   } catch (error) {
-    console.error('[Database] Sync failed:', error);
+    console.error("[Database] Sync failed:", error);
     throw error;
   }
 };

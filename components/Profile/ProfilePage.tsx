@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { profilePageStyles as styles } from "./ProfilePage.styles";
@@ -9,18 +10,23 @@ import { DocumentHub } from "../Documents/DocumentHub";
 export default function ProfilePage() {
   const user = useSelector((state: RootState) => state.auth.user);
   const [activeTab, setActiveTab] = useState("Profile info");
+  const router = useRouter();
 
   const tabs = ["Profile info", "Docs", "Ask me", "Quiz", "Followers"];
 
   if (!user) return null;
 
-  const fullName = `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User";
+  const fullName =
+    `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User";
   const avatarSrc =
     user.profileImage ||
     `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=6366f1&color=fff&size=200`;
 
   return (
-    <div id="profile-page" className="min-h-screen bg-[var(--color-bg)] py-8 px-4">
+    <div
+      id="profile-page"
+      className="min-h-screen bg-[var(--color-bg)] py-8 px-4"
+    >
       <div className="mx-auto max-w-7xl space-y-6">
         {/* Profile Header Card */}
         <div id="profile-header-card" className={styles.card}>
@@ -46,7 +52,10 @@ export default function ProfilePage() {
                 <span id="profile-role-badge" className={styles.roleBadge}>
                   {user.role}
                 </span>
-                <span id="profile-subscription-badge" className={styles.subscriptionBadge}>
+                <span
+                  id="profile-subscription-badge"
+                  className={styles.subscriptionBadge}
+                >
                   {user.subscription || "Trial"}
                 </span>
               </div>
@@ -71,7 +80,10 @@ export default function ProfilePage() {
         </div>
 
         {/* Tab Content */}
-        <div id="profile-tab-content-area" className="transition-all duration-300">
+        <div
+          id="profile-tab-content-area"
+          className="transition-all duration-300"
+        >
           {activeTab === "Profile info" && (
             <div id="profile-details-card" className={styles.card}>
               <div className="p-6">
@@ -110,7 +122,10 @@ export default function ProfilePage() {
           )}
 
           {activeTab === "Docs" && (
-            <div id="profile-tab-docs-content" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div
+              id="profile-tab-docs-content"
+              className="animate-in fade-in slide-in-from-bottom-4 duration-500"
+            >
               <DocumentHub id="profile-docs-tab" isTabPage={true} />
             </div>
           )}
@@ -130,6 +145,7 @@ export default function ProfilePage() {
               title="Knowledge Quizzes"
               description="Test your knowledge or challenge others with customized quizzes."
               icon="🧠"
+              onGetStarted={() => router.push("/quiz")}
             />
           )}
 
@@ -152,11 +168,13 @@ const PlaceholderTab = ({
   title,
   description,
   icon,
+  onGetStarted,
 }: {
   id: string;
   title: string;
   description: string;
   icon: string;
+  onGetStarted?: () => void;
 }) => (
   <div id={id} className={styles.card}>
     <div className="p-12 flex flex-col items-center text-center space-y-4">
@@ -165,7 +183,10 @@ const PlaceholderTab = ({
       <p className="text-sm text-[var(--color-fg)] opacity-60 max-w-sm mx-auto">
         {description}
       </p>
-      <button className="mt-4 px-6 py-2 bg-accent text-white rounded-full text-sm font-bold shadow-md hover:opacity-90 transition-opacity">
+      <button
+        onClick={onGetStarted}
+        className="mt-4 px-6 py-2 bg-accent text-white rounded-full text-sm font-bold shadow-md hover:opacity-90 transition-opacity cursor-pointer"
+      >
         Get Started
       </button>
     </div>
