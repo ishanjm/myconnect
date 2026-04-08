@@ -1,15 +1,15 @@
-import { NextResponse } from 'next/server';
-import { Op } from 'sequelize';
-import { Document, IDocument } from '@/model/Document';
-import { User, UserAttributes } from '@/model/User';
-import { deleteFromCloudinary } from '@/utils/cloudinary';
+import { NextResponse } from "next/server";
+import { Op } from "sequelize";
+import { Document, IDocument } from "@/model/Document";
+import { User, UserAttributes } from "@/model/User";
+import { deleteFromCloudinary } from "@/utils/cloudinary";
 
-export const runtime = 'nodejs';
+export const runtime = "nodejs";
 
 const TRIAL_DOC_RETENTION_DAYS = 7;
 
 function toErrorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : 'Unknown deletion error';
+  return error instanceof Error ? error.message : "Unknown deletion error";
 }
 
 function isAuthorizedCronRequest(req: Request): boolean {
@@ -20,9 +20,11 @@ function isAuthorizedCronRequest(req: Request): boolean {
     return true;
   }
 
-  const headerSecret = req.headers.get('x-cron-secret');
-  const authHeader = req.headers.get('authorization');
-  const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  const headerSecret = req.headers.get("x-cron-secret");
+  const authHeader = req.headers.get("authorization");
+  const bearerToken = authHeader?.startsWith("Bearer ")
+    ? authHeader.slice(7)
+    : null;
 
   return headerSecret === configuredSecret || bearerToken === configuredSecret;
 }
@@ -33,22 +35,27 @@ function isAuthorizedCronRequest(req: Request): boolean {
  */
 export async function GET(req: Request) {
   if (!isAuthorizedCronRequest(req)) {
-    return NextResponse.json({ error: 'Unauthorized cron request' }, { status: 401 });
+    return NextResponse.json(
+      { error: "Unauthorized cron request" },
+      { status: 401 },
+    );
   }
 
-  const cutoffDate = new Date(Date.now() - TRIAL_DOC_RETENTION_DAYS * 24 * 60 * 60 * 1000);
+  const cutoffDate = new Date(
+    Date.now() - TRIAL_DOC_RETENTION_DAYS * 24 * 60 * 60 * 1000,
+  );
 
   try {
     const trialUsers = (await User.findAll({
-      attributes: ['id'],
-      where: { subscription: 'trial' },
-    })) as unknown as Array<Pick<UserAttributes, 'id'>>;
+      attributes: ["id"],
+      where: { subscription: "trial" },
+    })) as unknown as Array<Pick<UserAttributes, "id">>;
 
     const trialUserIds = trialUsers.map((user) => user.id);
 
     if (trialUserIds.length === 0) {
       return NextResponse.json({
-        message: 'No trial users found',
+        message: "No trial users found",
         deletedCount: 0,
         failedCount: 0,
       });
@@ -63,7 +70,7 @@ export async function GET(req: Request) {
 
     if (expiredDocs.length === 0) {
       return NextResponse.json({
-        message: 'No expired trial documents found',
+        message: "No expired trial documents found",
         deletedCount: 0,
         failedCount: 0,
       });
@@ -88,7 +95,7 @@ export async function GET(req: Request) {
     }
 
     return NextResponse.json({
-      message: 'Trial document cleanup completed',
+      message: "Trial document cleanup completed",
       cutoffDate: cutoffDate.toISOString(),
       totalCandidates: expiredDocs.length,
       deletedCount,
@@ -96,10 +103,10 @@ export async function GET(req: Request) {
       failures,
     });
   } catch (error: unknown) {
-    console.error('Trial document cleanup failed:', error);
+    console.error("Trial document cleanup failed:", error);
     return NextResponse.json(
-      { error: toErrorMessage(error) || 'Failed to cleanup trial documents' },
-      { status: 500 }
+      { error: toErrorMessage(error) || "Failed to cleanup trial documents" },
+      { status: 500 },
     );
   }
 }

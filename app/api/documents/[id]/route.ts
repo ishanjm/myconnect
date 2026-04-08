@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
-import { Document, IDocument } from '@/model/Document';
-import { validateToken } from '@/common/apiAuth';
-import { deleteFromCloudinary } from '@/utils/cloudinary';
+import { NextResponse } from "next/server";
+import { Document, IDocument } from "@/model/Document";
+import { validateToken } from "@/common/apiAuth";
+import { deleteFromCloudinary } from "@/utils/cloudinary";
 
 function toErrorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : 'Failed to delete document';
+  return error instanceof Error ? error.message : "Failed to delete document";
 }
 
 /**
@@ -29,30 +29,39 @@ function toErrorMessage(error: unknown): string {
  */
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const payload = await validateToken(req);
-  if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!payload)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
     const documentId = Number((await params).id);
-    const document = await Document.findByPk(documentId) as unknown as IDocument & { destroy: () => Promise<void> } | null;
+    const document = (await Document.findByPk(documentId)) as unknown as
+      | (IDocument & { destroy: () => Promise<void> })
+      | null;
 
     if (!document) {
-      return NextResponse.json({ error: 'Document not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: "Document not found" },
+        { status: 404 },
+      );
     }
 
     // Authorization check: Only the owner can delete
     if (document.userId !== payload.id) {
-      return NextResponse.json({ error: 'Forbidden: You are not the owner of this document' }, { status: 403 });
+      return NextResponse.json(
+        { error: "Forbidden: You are not the owner of this document" },
+        { status: 403 },
+      );
     }
 
     await deleteFromCloudinary(document.downloadUrl);
     await document.destroy();
 
-    return NextResponse.json({ message: 'Document deleted successfully' });
+    return NextResponse.json({ message: "Document deleted successfully" });
   } catch (error: unknown) {
-    console.error('Document deletion error:', error);
+    console.error("Document deletion error:", error);
     return NextResponse.json({ error: toErrorMessage(error) }, { status: 500 });
   }
 }
