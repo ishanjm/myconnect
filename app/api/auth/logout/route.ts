@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
 /**
  * @swagger
@@ -11,25 +11,25 @@ import { NextResponse } from 'next/server';
  *         description: Logout successful
  */
 export async function POST() {
-  const response = NextResponse.json({ message: 'Logout successful' });
+  const response = NextResponse.json({ message: "Logout successful" });
 
   // Clear authentication cookies
-  response.cookies.set('access_token', '', {
+  response.cookies.set("access_token", "", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
     expires: new Date(0),
     maxAge: 0,
-    path: '/',
+    path: "/",
   });
 
-  response.cookies.set('refresh_token', '', {
+  response.cookies.set("refresh_token", "", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
     expires: new Date(0),
     maxAge: 0,
-    path: '/',
+    path: "/",
   });
 
   return response;

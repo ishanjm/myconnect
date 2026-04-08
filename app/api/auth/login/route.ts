@@ -1,7 +1,11 @@
-import { NextResponse } from 'next/server';
-import { User } from '@/model/User';
-import { PERSISTENT_SESSION_MAX_AGE_SECONDS, signAccessToken, signRefreshToken } from '@/utils/jwt';
-import { comparePassword } from '@/utils/password';
+import { NextResponse } from "next/server";
+import { User } from "@/model/User";
+import {
+  PERSISTENT_SESSION_MAX_AGE_SECONDS,
+  signAccessToken,
+  signRefreshToken,
+} from "@/utils/jwt";
+import { comparePassword } from "@/utils/password";
 
 /**
  * @swagger
@@ -53,22 +57,28 @@ export async function POST(req: Request) {
 
     const user = await User.findOne({ where: { email } });
     if (!user) {
-      return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
+      return NextResponse.json(
+        { error: "Invalid email or password" },
+        { status: 401 },
+      );
     }
 
     const isMatch = await comparePassword(password, user.password);
     if (!isMatch) {
-      return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
+      return NextResponse.json(
+        { error: "Invalid email or password" },
+        { status: 401 },
+      );
     }
 
-    const userPayload = { 
-      id: user.id, 
-      email: user.email, 
-      firstName: user.firstName, 
-      lastName: user.lastName, 
+    const userPayload = {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
       role: user.role,
       subscription: user.subscription,
-      profileImage: user.profileImage
+      profileImage: user.profileImage,
     };
 
     const accessToken = await signAccessToken(userPayload);
@@ -76,22 +86,22 @@ export async function POST(req: Request) {
 
     const response = NextResponse.json({
       token: accessToken,
-      user: userPayload
+      user: userPayload,
     });
 
-    response.cookies.set('access_token', accessToken, {
+    response.cookies.set("access_token", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
       maxAge: PERSISTENT_SESSION_MAX_AGE_SECONDS,
     });
 
-    response.cookies.set('refresh_token', refreshToken, {
+    response.cookies.set("refresh_token", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
       maxAge: PERSISTENT_SESSION_MAX_AGE_SECONDS,
     });
 

@@ -1,5 +1,10 @@
-import { NextResponse } from 'next/server';
-import { PERSISTENT_SESSION_MAX_AGE_SECONDS, signAccessToken, signRefreshToken, verifyToken } from '@/utils/jwt';
+import { NextResponse } from "next/server";
+import {
+  PERSISTENT_SESSION_MAX_AGE_SECONDS,
+  signAccessToken,
+  signRefreshToken,
+  verifyToken,
+} from "@/utils/jwt";
 
 /**
  * @swagger
@@ -15,24 +20,32 @@ import { PERSISTENT_SESSION_MAX_AGE_SECONDS, signAccessToken, signRefreshToken, 
  */
 export async function POST(req: Request) {
   try {
-    const refreshToken = (req as any).cookies?.get('refresh_token')?.value || 
-                         req.headers.get('cookie')?.split('; ').find(c => c.startsWith('refresh_token='))?.split('=')[1];
+    const refreshToken =
+      (req as any).cookies?.get("refresh_token")?.value ||
+      req.headers
+        .get("cookie")
+        ?.split("; ")
+        .find((c) => c.startsWith("refresh_token="))
+        ?.split("=")[1];
 
     if (!refreshToken) {
-      return NextResponse.json({ error: 'Refresh token missing' }, { status: 401 });
+      return NextResponse.json(
+        { error: "Refresh token missing" },
+        { status: 401 },
+      );
     }
 
     const payload = await verifyToken(refreshToken);
-    
+
     // Re-issue tokens and extend cookie lifetime for persistent sessions
-    const accessToken = await signAccessToken({ 
-      id: payload.id, 
-      email: payload.email, 
+    const accessToken = await signAccessToken({
+      id: payload.id,
+      email: payload.email,
       firstName: payload.firstName,
       lastName: payload.lastName,
       role: payload.role,
       subscription: payload.subscription,
-      profileImage: payload.profileImage
+      profileImage: payload.profileImage,
     });
 
     const refreshToken = await signRefreshToken({
@@ -42,7 +55,7 @@ export async function POST(req: Request) {
       lastName: payload.lastName,
       role: payload.role,
       subscription: payload.subscription,
-      profileImage: payload.profileImage
+      profileImage: payload.profileImage,
     });
 
     const response = NextResponse.json({
@@ -54,28 +67,31 @@ export async function POST(req: Request) {
         lastName: payload.lastName,
         role: payload.role,
         subscription: payload.subscription,
-        profileImage: payload.profileImage
-      }
+        profileImage: payload.profileImage,
+      },
     });
 
-    response.cookies.set('access_token', accessToken, {
+    response.cookies.set("access_token", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
       maxAge: PERSISTENT_SESSION_MAX_AGE_SECONDS,
     });
 
-    response.cookies.set('refresh_token', refreshToken, {
+    response.cookies.set("refresh_token", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
       maxAge: PERSISTENT_SESSION_MAX_AGE_SECONDS,
     });
 
     return response;
   } catch (error: any) {
-    return NextResponse.json({ error: 'Invalid refresh token' }, { status: 401 });
+    return NextResponse.json(
+      { error: "Invalid refresh token" },
+      { status: 401 },
+    );
   }
 }
