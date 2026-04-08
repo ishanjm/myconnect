@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 import { Document, IDocument } from '@/model/Document';
 import { validateToken } from '@/common/apiAuth';
+import { deleteFromCloudinary } from '@/utils/cloudinary';
+
+function toErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : 'Failed to delete document';
+}
 
 /**
  * @swagger
@@ -42,13 +47,12 @@ export async function DELETE(
       return NextResponse.json({ error: 'Forbidden: You are not the owner of this document' }, { status: 403 });
     }
 
-    // Note: We're only deleting from database for now. 
-    // In a production app, we would also delete from Cloudinary using some cloud utility.
+    await deleteFromCloudinary(document.downloadUrl);
     await document.destroy();
 
     return NextResponse.json({ message: 'Document deleted successfully' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Document deletion error:', error);
-    return NextResponse.json({ error: error.message || 'Failed to delete document' }, { status: 500 });
+    return NextResponse.json({ error: toErrorMessage(error) }, { status: 500 });
   }
 }
