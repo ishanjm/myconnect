@@ -3,7 +3,7 @@
 import { useFormik, FormikProvider } from "formik";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
-import { loginRequest } from "@/store/slices/auth";
+import { loginRequest, logoutSuccess } from "@/store/slices/auth";
 import { RootState } from "@/store/store";
 import { FormikTextField } from "../inputs/FormikTextField";
 import Link from "next/link";
@@ -20,17 +20,19 @@ const validationSchema = Yup.object().shape({
 export default function LoginForm() {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { isLoading, error, token } = useSelector((state: RootState) => state.auth);
+  const { isLoading, error, token } = useSelector(
+    (state: RootState) => state.auth,
+  );
 
-const [hasAttemptedLogin, setHasAttemptedLogin] = useState(false);
+  const [hasAttemptedLogin, setHasAttemptedLogin] = useState(false);
 
   useEffect(() => {
     // If the component mounts and we have a token, but haven't attempted login,
     // the Redux token is stale (cookie expired/missing, so middleware let us through).
     if (token && !hasAttemptedLogin) {
-      dispatch({ type: 'auth/logoutSuccess' });
+      dispatch(logoutSuccess());
     }
-  }, []);
+  }, [token, hasAttemptedLogin, dispatch]);
 
   useEffect(() => {
     if (token && hasAttemptedLogin) {
@@ -52,9 +54,14 @@ const [hasAttemptedLogin, setHasAttemptedLogin] = useState(false);
 
   return (
     <div className="w-full max-w-md p-8 bg-white dark:bg-gray-900 shadow-md rounded-lg">
-      <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white text-center">Login to MyConnect</h2>
+      <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white text-center">
+        Login to MyConnect
+      </h2>
       {error && (
-        <div id="auth-login-error-alert" className="p-3 mb-4 text-sm text-red-700 bg-red-100 rounded">
+        <div
+          id="auth-login-error-alert"
+          className="p-3 mb-4 text-sm text-red-700 bg-red-100 rounded"
+        >
           {error}
         </div>
       )}
@@ -79,7 +86,9 @@ const [hasAttemptedLogin, setHasAttemptedLogin] = useState(false);
             type="submit"
             disabled={isLoading}
             className={`w-full mt-4 p-2 text-white font-semibold rounded transition-colors ${
-              isLoading ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+              isLoading
+                ? "bg-blue-300 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
             }`}
           >
             {isLoading ? "Signing in..." : "Sign In"}
@@ -87,7 +96,11 @@ const [hasAttemptedLogin, setHasAttemptedLogin] = useState(false);
         </form>
       </FormikProvider>
       <div className="mt-4 text-center">
-        <Link href="/register" id="auth-login-register-link" className="text-sm text-blue-600 hover:underline">
+        <Link
+          href="/register"
+          id="auth-login-register-link"
+          className="text-sm text-blue-600 hover:underline"
+        >
           Don't have an account? Register
         </Link>
       </div>
