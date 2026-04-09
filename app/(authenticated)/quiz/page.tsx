@@ -27,6 +27,8 @@ type Quiz = {
   id: string;
   title: string;
   questions: Question[];
+  shuffleQuestions: boolean;
+  shuffleAnswers: boolean;
 };
 
 const createId = () =>
@@ -48,6 +50,8 @@ const createQuiz = (): Quiz => ({
   id: createId(),
   title: "",
   questions: [createQuestion()],
+  shuffleQuestions: false,
+  shuffleAnswers: false,
 });
 
 export default function QuizBuilderPage() {
@@ -77,6 +81,8 @@ export default function QuizBuilderPage() {
         setQuizzes([{
           id: quizToEdit.id.toString(),
           title: quizToEdit.title,
+          shuffleQuestions: !!quizToEdit.shuffleQuestions,
+          shuffleAnswers: !!quizToEdit.shuffleAnswers,
           questions: quizToEdit.questions.map(q => ({
             id: createId(),
             prompt: q.prompt,
@@ -121,6 +127,26 @@ export default function QuizBuilderPage() {
     setQuizzes((prev) =>
       prev.map((quiz) =>
         quiz.id === quizId ? { ...quiz, title: value } : quiz,
+      ),
+    );
+  };
+
+  const toggleShuffleQuestions = (quizId: string) => {
+    setQuizzes((prev) =>
+      prev.map((quiz) =>
+        quiz.id === quizId
+          ? { ...quiz, shuffleQuestions: !quiz.shuffleQuestions }
+          : quiz,
+      ),
+    );
+  };
+
+  const toggleShuffleAnswers = (quizId: string) => {
+    setQuizzes((prev) =>
+      prev.map((quiz) =>
+        quiz.id === quizId
+          ? { ...quiz, shuffleAnswers: !quiz.shuffleAnswers }
+          : quiz,
       ),
     );
   };
@@ -299,6 +325,8 @@ export default function QuizBuilderPage() {
                 isCorrect: answer.isCorrect,
               })),
             })),
+            shuffleQuestions: quiz.shuffleQuestions,
+            shuffleAnswers: quiz.shuffleAnswers,
           },
         }),
       );
@@ -314,6 +342,8 @@ export default function QuizBuilderPage() {
                 isCorrect: answer.isCorrect,
               })),
             })),
+            shuffleQuestions: quiz.shuffleQuestions,
+            shuffleAnswers: quiz.shuffleAnswers,
           })),
         ),
       );
@@ -367,6 +397,32 @@ export default function QuizBuilderPage() {
                   placeholder="Example: JavaScript Basics"
                   className="w-full rounded-xl border border-border bg-transparent px-4 py-2.5 text-sm text-fg outline-none focus:border-accent"
                 />
+              </div>
+
+              <div className="flex flex-wrap items-center gap-6 py-2">
+                <label className="flex cursor-pointer items-center gap-2">
+                  <div 
+                    className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors ${quiz.shuffleQuestions ? 'bg-accent' : 'bg-gray-300'}`}
+                    onClick={() => toggleShuffleQuestions(quiz.id)}
+                  >
+                    <span 
+                      className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${quiz.shuffleQuestions ? 'translate-x-5' : 'translate-x-0.5'}`} 
+                    />
+                  </div>
+                  <span className="text-sm font-medium text-fg opacity-80">Shuffle Questions</span>
+                </label>
+
+                <label className="flex cursor-pointer items-center gap-2">
+                  <div 
+                    className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors ${quiz.shuffleAnswers ? 'bg-accent' : 'bg-gray-300'}`}
+                    onClick={() => toggleShuffleAnswers(quiz.id)}
+                  >
+                    <span 
+                      className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${quiz.shuffleAnswers ? 'translate-x-5' : 'translate-x-0.5'}`} 
+                    />
+                  </div>
+                  <span className="text-sm font-medium text-fg opacity-80">Shuffle Answers</span>
+                </label>
               </div>
 
               <div className="space-y-4">

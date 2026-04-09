@@ -17,6 +17,8 @@ export interface QuizAttributes {
   questions: QuizQuestion[];
   userId: number;
   accessKey: string;
+  shuffleQuestions: boolean;
+  shuffleAnswers: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -24,6 +26,8 @@ export interface QuizAttributes {
 export type CreateQuizPayload = {
   title: string;
   questions: QuizQuestion[];
+  shuffleQuestions: boolean;
+  shuffleAnswers: boolean;
 };
 
 type QuizCreationAttributes = Optional<
@@ -55,6 +59,16 @@ const Quiz = sequelize.define<Model<QuizAttributes, QuizCreationAttributes>>(
     accessKey: {
       type: DataTypes.STRING(4),
       allowNull: false,
+    },
+    shuffleQuestions: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    shuffleAnswers: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
   },
   {

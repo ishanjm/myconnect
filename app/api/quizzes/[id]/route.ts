@@ -93,6 +93,8 @@ export async function PUT(
     await quiz.update({
       title: body.title.trim(),
       questions: body.questions,
+      shuffleQuestions: !!body.shuffleQuestions,
+      shuffleAnswers: !!body.shuffleAnswers,
     });
 
     return NextResponse.json({ quiz });

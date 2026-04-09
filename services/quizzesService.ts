@@ -7,6 +7,8 @@ export interface QuizItem {
   questions: QuizQuestion[];
   userId: number;
   accessKey: string;
+  shuffleQuestions?: boolean;
+  shuffleAnswers?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -14,6 +16,8 @@ export interface QuizItem {
 export interface CreateQuizInput {
   title: string;
   questions: QuizQuestion[];
+  shuffleQuestions: boolean;
+  shuffleAnswers: boolean;
 }
 
 const API_BASE = "/api/quizzes";

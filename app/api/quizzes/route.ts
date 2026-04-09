@@ -86,6 +86,8 @@ export async function POST(req: Request) {
         questions: quiz.questions,
         userId: payload.id,
         accessKey: String(Math.floor(1000 + Math.random() * 9000)),
+        shuffleQuestions: !!quiz.shuffleQuestions,
+        shuffleAnswers: !!quiz.shuffleAnswers,
       })),
     );
 
