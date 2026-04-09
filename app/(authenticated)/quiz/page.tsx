@@ -1,6 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { clearQuizStatus, createQuizzesRequest } from "@/store/slices/quizzes";
 
 type Answer = {
   id: string;
@@ -42,15 +46,27 @@ const createQuiz = (): Quiz => ({
 });
 
 export default function QuizBuilderPage() {
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const { isSaving, error, successMessage } = useSelector(
+    (state: RootState) => state.quizzes,
+  );
   const [quizzes, setQuizzes] = useState<Quiz[]>([createQuiz()]);
-  const [isSaving, setIsSaving] = useState(false);
-  const [saveStatus, setSaveStatus] = useState<{
-    type: "idle" | "success" | "error";
-    message: string;
-  }>({
-    type: "idle",
-    message: "",
-  });
+
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => {
+        router.push("/profile?tab=Quiz");
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage, router]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearQuizStatus());
+    };
+  }, [dispatch]);
 
   const addQuiz = () => {
     setQuizzes((prev) => [...prev, createQuiz()]);
@@ -229,12 +245,10 @@ export default function QuizBuilderPage() {
   const handleSaveQuizzes = async () => {
     if (!isQuizValid || isSaving) return;
 
-    setIsSaving(true);
-    setSaveStatus({ type: "idle", message: "" });
-
-    try {
-      const payload = {
-        quizzes: quizzes.map((quiz) => ({
+    dispatch(clearQuizStatus());
+    dispatch(
+      createQuizzesRequest(
+        quizzes.map((quiz) => ({
           title: quiz.title.trim(),
           questions: quiz.questions.map((question) => ({
             prompt: question.prompt.trim(),
@@ -244,33 +258,8 @@ export default function QuizBuilderPage() {
             })),
           })),
         })),
-      };
-
-      const response = await fetch("/api/quizzes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = (await response.json()) as { error?: string };
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to save quizzes");
-      }
-
-      setSaveStatus({
-        type: "success",
-        message: "Quizzes saved successfully.",
-      });
-    } catch (error: unknown) {
-      const message =
-        error instanceof Error ? error.message : "Failed to save quizzes";
-      setSaveStatus({ type: "error", message });
-    } finally {
-      setIsSaving(false);
-    }
+      ),
+    );
   };
 
   return (
@@ -450,15 +439,15 @@ export default function QuizBuilderPage() {
             {isSaving ? "Saving..." : "Save Quizzes"}
           </button>
 
-          {saveStatus.type !== "idle" && (
+          {(successMessage || error) && (
             <span
               className={`text-sm font-semibold ${
-                saveStatus.type === "success"
+                successMessage
                   ? "text-emerald-600"
                   : "text-red-600"
               }`}
             >
-              {saveStatus.message}
+              {successMessage || error}
             </span>
           )}
         </div>

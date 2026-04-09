@@ -16,6 +16,7 @@ export interface QuizAttributes {
   title: string;
   questions: QuizQuestion[];
   userId: number;
+  accessKey: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -49,6 +50,10 @@ const Quiz = sequelize.define<Model<QuizAttributes, QuizCreationAttributes>>(
     },
     userId: {
       type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
+    },
+    accessKey: {
+      type: DataTypes.STRING(4),
       allowNull: false,
     },
   },

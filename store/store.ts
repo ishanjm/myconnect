@@ -16,6 +16,7 @@ import locationsReducer from './slices/locations';
 import documentCategoriesReducer from './slices/documentCategories';
 import documentsReducer from './slices/documents';
 import postsReducer from './slices/posts';
+import quizzesReducer from './slices/quizzes';
 import { rootEpic } from './epics/rootEpic';
 
 const rootReducer = combineReducers({
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   documentCategories: documentCategoriesReducer,
   documents: documentsReducer,
   posts: postsReducer,
+  quizzes: quizzesReducer,
 });
 
 const persistConfig = {

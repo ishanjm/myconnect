@@ -66,10 +66,11 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       return NextResponse.json({ error: 'Category not found' }, { status: 404 });
     }
 
-    if (name) category.name = name;
-    if (description !== undefined) category.description = description;
+    const updateData: any = {};
+    if (name) updateData.name = name;
+    if (description !== undefined) updateData.description = description;
     
-    await category.save();
+    await category.update(updateData);
     return NextResponse.json({ category });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'Failed to update category' }, { status: 500 });
