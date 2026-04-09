@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { validateToken } from "@/common/apiAuth";
 import { Quiz, CreateQuizPayload } from "@/model/Quiz";
-import { syncDB } from "@/utils/db";
+import { ensureDbInitialized } from "@/utils/dbInit";
 
 function isValidQuizPayload(quiz: CreateQuizPayload): boolean {
   if (!quiz.title || quiz.title.trim().length === 0) return false;
@@ -52,7 +52,7 @@ function isValidQuizPayload(quiz: CreateQuizPayload): boolean {
  *         description: Unauthorized
  */
 export async function POST(req: Request) {
-  await syncDB();
+  await ensureDbInitialized();
 
   const payload = await validateToken(req);
   if (!payload)
@@ -110,7 +110,7 @@ export async function POST(req: Request) {
  *         description: Unauthorized
  */
 export async function GET(req: Request) {
-  await syncDB();
+  await ensureDbInitialized();
 
   const payload = await validateToken(req);
   if (!payload)

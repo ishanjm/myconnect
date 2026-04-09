@@ -1,10 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { clearQuizStatus, createQuizzesRequest } from "@/store/slices/quizzes";
+import { 
+  clearQuizStatus, 
+  createQuizzesRequest, 
+  fetchQuizByIdRequest, 
+  updateQuizRequest 
+} from "@/store/slices/quizzes";
 
 type Answer = {
   id: string;
@@ -48,10 +53,43 @@ const createQuiz = (): Quiz => ({
 export default function QuizBuilderPage() {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { isSaving, error, successMessage } = useSelector(
+  const searchParams = useSearchParams();
+  const quizIdParam = searchParams.get("id");
+  const editQuizId = quizIdParam ? Number(quizIdParam) : null;
+
+  const { isSaving, error, successMessage, isLoading, items } = useSelector(
     (state: RootState) => state.quizzes,
   );
   const [quizzes, setQuizzes] = useState<Quiz[]>([createQuiz()]);
+
+  // Fetch quiz for editing
+  useEffect(() => {
+    if (editQuizId) {
+      dispatch(fetchQuizByIdRequest(editQuizId));
+    }
+  }, [editQuizId, dispatch]);
+
+  // Populate state with fetched quiz
+  useEffect(() => {
+    if (editQuizId && items.length > 0) {
+      const quizToEdit = items.find(q => q.id === editQuizId);
+      if (quizToEdit) {
+        setQuizzes([{
+          id: quizToEdit.id.toString(),
+          title: quizToEdit.title,
+          questions: quizToEdit.questions.map(q => ({
+            id: createId(),
+            prompt: q.prompt,
+            answers: q.answers.map(a => ({
+              id: createId(),
+              text: a.text,
+              isCorrect: a.isCorrect
+            }))
+          }))
+        }]);
+      }
+    }
+  }, [editQuizId, items]);
 
   useEffect(() => {
     if (successMessage) {
@@ -246,30 +284,54 @@ export default function QuizBuilderPage() {
     if (!isQuizValid || isSaving) return;
 
     dispatch(clearQuizStatus());
-    dispatch(
-      createQuizzesRequest(
-        quizzes.map((quiz) => ({
-          title: quiz.title.trim(),
-          questions: quiz.questions.map((question) => ({
-            prompt: question.prompt.trim(),
-            answers: question.answers.map((answer) => ({
-              text: answer.text.trim(),
-              isCorrect: answer.isCorrect,
+
+    if (editQuizId) {
+      const quiz = quizzes[0];
+      dispatch(
+        updateQuizRequest({
+          id: editQuizId,
+          payload: {
+            title: quiz.title.trim(),
+            questions: quiz.questions.map((question) => ({
+              prompt: question.prompt.trim(),
+              answers: question.answers.map((answer) => ({
+                text: answer.text.trim(),
+                isCorrect: answer.isCorrect,
+              })),
+            })),
+          },
+        }),
+      );
+    } else {
+      dispatch(
+        createQuizzesRequest(
+          quizzes.map((quiz) => ({
+            title: quiz.title.trim(),
+            questions: quiz.questions.map((question) => ({
+              prompt: question.prompt.trim(),
+              answers: question.answers.map((answer) => ({
+                text: answer.text.trim(),
+                isCorrect: answer.isCorrect,
+              })),
             })),
           })),
-        })),
-      ),
-    );
+        ),
+      );
+    }
   };
 
   return (
     <div className="min-h-screen bg-bg px-4 py-8">
       <div className="mx-auto max-w-5xl space-y-6">
         <div className="rounded-2xl border border-border bg-surface p-6 shadow-sm">
-          <h1 className="text-2xl font-extrabold text-fg">Quiz Builder</h1>
+          <h1 className="text-2xl font-extrabold text-fg">
+            {editQuizId ? "Edit Quiz" : "Quiz Builder"}
+          </h1>
           <p className="mt-2 text-sm text-fg opacity-70">
-            Create multiple quizzes. Each quiz can include multiple questions
-            with answers and one correct answer per question.
+            {editQuizId 
+              ? "Update your quiz details, questions, and answers."
+              : "Create multiple quizzes. Each quiz can include multiple questions with answers and one correct answer per question."
+            }
           </p>
         </div>
 
@@ -285,7 +347,7 @@ export default function QuizBuilderPage() {
               <button
                 type="button"
                 onClick={() => removeQuiz(quiz.id)}
-                className="rounded-full border border-red-300 px-3 py-1 text-xs font-semibold text-red-600 hover:bg-red-50 cursor-pointer"
+                className={`rounded-full border border-red-300 px-3 py-1 text-xs font-semibold text-red-600 hover:bg-red-50 cursor-pointer ${editQuizId ? 'hidden' : ''}`}
               >
                 Remove Quiz
               </button>
@@ -412,13 +474,15 @@ export default function QuizBuilderPage() {
         ))}
 
         <div className="flex flex-wrap items-center gap-3">
-          <button
-            type="button"
-            onClick={addQuiz}
-            className="rounded-full bg-accent px-5 py-2 text-sm font-bold text-white shadow-sm hover:opacity-90 cursor-pointer"
-          >
-            + Add Another Quiz
-          </button>
+          {!editQuizId && (
+            <button
+              type="button"
+              onClick={addQuiz}
+              className="rounded-full bg-accent px-5 py-2 text-sm font-bold text-white shadow-sm hover:opacity-90 cursor-pointer"
+            >
+              + Add Another Quiz
+            </button>
+          )}
 
           <span
             className={`text-sm font-semibold ${
@@ -436,7 +500,7 @@ export default function QuizBuilderPage() {
             disabled={!isQuizValid || isSaving}
             className="rounded-full bg-emerald-600 px-5 py-2 text-sm font-bold text-white shadow-sm disabled:cursor-not-allowed disabled:opacity-50 hover:opacity-90 cursor-pointer"
           >
-            {isSaving ? "Saving..." : "Save Quizzes"}
+            {isSaving ? "Saving..." : editQuizId ? "Update Quiz" : "Save Quizzes"}
           </button>
 
           {(successMessage || error) && (

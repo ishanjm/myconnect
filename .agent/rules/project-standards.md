@@ -116,6 +116,12 @@ import Link from "next/link";
 - To prevent naming collisions with frontend services (e.g., `postsService.ts`), all backend business logic files MUST use the `ServerService.ts` suffix (e.g., `postsServerService.ts`).
 - Refer to [backend-services-pattern.md](file:///c:/Ishan/developments/myconnect/.agent/rules/backend-services-pattern.md) for structural rules.
 
+## 15. Mandatory Sequelize Model Registration
+
+- All Sequelize models must be explicitly imported in the `syncDB` function within `utils/db.ts`.
+- This ensures models are registered before `sequelize.sync()` is called, preventing table missing errors.
+- Refer to [sequelize-model-registration.md](file:///c:/Ishan/developments/myconnect/.agent/rules/sequelize-model-registration.md) for details.
+
 ---
 
 **Summary**
@@ -135,4 +141,5 @@ import Link from "next/link";
 | Navigation | Use **`Link`** from `next/link` for all internal links |
 | API Auth | Use `validateToken` from `common/apiAuth` for all authenticated routes |
 | Architecture | **No `class` keyword allowed anywhere** (Models, Services, Components) |
-| Backend | Extract business logic from API Routes to `services/*ServerService.ts` |
+| Backend | Extract business logic from API Routes to `services/*ServerService.ts` |
+| Models | **MUST** register all new models in `utils/db.ts:syncDB` |

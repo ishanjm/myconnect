@@ -236,7 +236,11 @@ export default function ProfilePage() {
                         className="rounded-xl border border-border p-4 flex items-center justify-between gap-3"
                       >
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-base font-bold text-[var(--color-fg)] truncate">
+                          <h3 
+                            className="text-base font-bold text-[var(--color-fg)] truncate cursor-pointer hover:text-accent transition-colors"
+                            onClick={() => router.push(`/quiz?id=${quiz.id}`)}
+                            title="Click to edit"
+                          >
                             {quiz.title}
                           </h3>
                           <p className="mt-1 text-sm text-[var(--color-fg)] opacity-70">

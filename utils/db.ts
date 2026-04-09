@@ -25,8 +25,9 @@ export const sequelize = new Sequelize(
   },
 );
 
-// Initialization flag
+// Initialization flag and promise
 let isInitialSync = false;
+let syncPromise: Promise<void> | null = null;
 
 /**
  * Synchronize the database.
@@ -34,26 +35,33 @@ let isInitialSync = false;
  */
 export const syncDB = async (force = false) => {
   if (isInitialSync && !force) return;
+  if (syncPromise && !force) return syncPromise;
 
-  try {
-    // Dynamic imports to avoid circular dependencies and ensure models are registered
-    await import("../model/User");
-    await import("../model/Post");
-    await import("../model/Document");
-    await import("../model/Location");
-    await import("../model/DocumentCategory");
-    await import("../model/Quiz");
+  syncPromise = (async () => {
+    try {
+      // Dynamic imports to avoid circular dependencies and ensure models are registered
+      await import("../model/User");
+      await import("../model/Post");
+      await import("../model/Document");
+      await import("../model/Location");
+      await import("../model/DocumentCategory");
+      await import("../model/Quiz");
 
-    await sequelize.authenticate();
-    // Use alter: true in dev to sync changes without dropping data
-    await sequelize.sync({ force, alter: !force });
+      await sequelize.authenticate();
+      // alter: false by default to avoid index bloat. 
+      // Set to true manually once if you have schema changes.
+      await sequelize.sync({ force, alter: false });
 
-    isInitialSync = true;
-    console.log(
-      `[Database] Synchronized successfully (force: ${force}, alter: ${!force})`,
-    );
-  } catch (error) {
-    console.error("[Database] Sync failed:", error);
-    throw error;
-  }
+      isInitialSync = true;
+      console.log(
+        `[Database] Synchronized successfully (force: ${force}, alter: ${!force})`,
+      );
+    } catch (error) {
+      console.error("[Database] Sync failed:", error);
+      syncPromise = null; // Reset promise on failure to allow retry
+      throw error;
+    }
+  })();
+
+  return syncPromise;
 };

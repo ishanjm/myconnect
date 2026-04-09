@@ -12,6 +12,9 @@ import {
   fetchQuizzesRequest,
   fetchQuizzesSuccess,
   fetchQuizzesFailure,
+  fetchQuizByIdRequest,
+  fetchQuizByIdSuccess,
+  fetchQuizByIdFailure,
   updateQuizRequest,
   updateQuizSuccess,
   updateQuizFailure,
@@ -26,6 +29,23 @@ export const fetchQuizzesEpic: Epic<Action> = (action$) =>
         map((quizzes) => fetchQuizzesSuccess(quizzes)),
         catchError((error) =>
           of(fetchQuizzesFailure(error.response?.data?.error || "Failed to fetch quizzes")),
+        ),
+      ),
+    ),
+  );
+
+export const fetchQuizByIdEpic: Epic<Action> = (action$) =>
+  action$.pipe(
+    ofType(fetchQuizByIdRequest.type),
+    mergeMap((action: PayloadAction<number>) =>
+      from(quizzesService.fetchQuizById(action.payload)).pipe(
+        map((quiz) => fetchQuizByIdSuccess(quiz)),
+        catchError((error) =>
+          of(
+            fetchQuizByIdFailure(
+              error.response?.data?.error || "Failed to fetch quiz",
+            ),
+          ),
         ),
       ),
     ),

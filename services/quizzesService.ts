@@ -23,6 +23,11 @@ export const quizzesService = {
     const response = await axios.get<{ quizzes: QuizItem[] }>(API_BASE);
     return response.data.quizzes;
   },
+  
+  fetchQuizById: async (id: number): Promise<QuizItem> => {
+    const response = await axios.get<{ quiz: QuizItem }>(`${API_BASE}/${id}`);
+    return response.data.quiz;
+  },
 
   createQuizzes: async (quizzes: CreateQuizInput[]): Promise<QuizItem[]> => {
     const response = await axios.post<{ quizzes: QuizItem[] }>(API_BASE, {

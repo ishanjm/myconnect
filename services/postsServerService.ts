@@ -1,11 +1,11 @@
 import { Post, PostAttributes } from '@/model/Post';
 import { User, UserAttributes } from '@/model/User';
 import { deleteFromCloudinary, uploadToCloudinary } from '@/utils/cloudinary';
-import { syncDB } from '@/utils/db';
+import { ensureDbInitialized } from '@/utils/dbInit';
 
 export const serverPostsService = {
   getPosts: async () => {
-    await syncDB();
+    await ensureDbInitialized();
     const posts = await Post.findAll({
       order: [['createdAt', 'DESC']],
       limit: 50
@@ -27,7 +27,7 @@ export const serverPostsService = {
   },
 
   createPost: async (content: string, file: File | null, userId: number) => {
-    await syncDB();
+    await ensureDbInitialized();
     if (!content && !file) {
       const error: any = new Error('Post content or image is required');
       error.status = 400;

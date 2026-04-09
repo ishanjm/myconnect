@@ -36,6 +36,24 @@ const quizzesSlice = createSlice({
       state.isLoading = false;
       state.error = action.payload;
     },
+    
+    fetchQuizByIdRequest: (state, action: PayloadAction<number>) => {
+      void action;
+      state.isLoading = true;
+      state.error = null;
+    },
+    fetchQuizByIdSuccess: (state, action: PayloadAction<QuizItem>) => {
+      state.isLoading = false;
+      // Optionally update the item in the list if it exists
+      state.items = state.items.map((quiz) =>
+        quiz.id === action.payload.id ? action.payload : quiz,
+      );
+      // If NOT in list, we could add it, but usually this is used for the builder which pulls its own state
+    },
+    fetchQuizByIdFailure: (state, action: PayloadAction<string>) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
 
     createQuizzesRequest: (state, action: PayloadAction<CreateQuizInput[]>) => {
       void action;
@@ -101,6 +119,9 @@ export const {
   fetchQuizzesRequest,
   fetchQuizzesSuccess,
   fetchQuizzesFailure,
+  fetchQuizByIdRequest,
+  fetchQuizByIdSuccess,
+  fetchQuizByIdFailure,
   createQuizzesRequest,
   createQuizzesSuccess,
   createQuizzesFailure,
