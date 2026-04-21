@@ -11,6 +11,7 @@ import {
   deleteQuizRequest,
   fetchQuizzesRequest,
 } from "@/store/slices/quizzes";
+import { fetchLocationsRequest } from "@/store/slices/locations";
 
 export default function ProfilePage() {
   const dispatch = useDispatch();
@@ -21,6 +22,11 @@ export default function ProfilePage() {
     error: quizLoadError,
     isSaving: isQuizSaving,
   } = useSelector((state: RootState) => state.quizzes);
+  const {
+    items: locations,
+    isLoading: isLoadingLocations,
+    error: locationsLoadError,
+  } = useSelector((state: RootState) => state.locations);
   const [activeTab, setActiveTab] = useState("Profile info");
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -38,7 +44,14 @@ export default function ProfilePage() {
     }
   }, [searchParams]);
 
-  const tabs = ["Profile info", "Docs", "Ask me", "Quiz", "Followers"];
+  const tabs = [
+    "Profile info",
+    "Docs",
+    "Locations",
+    "Ask me",
+    "Quiz",
+    "Followers",
+  ];
 
   useEffect(() => {
     if (!user) return;
@@ -49,6 +62,13 @@ export default function ProfilePage() {
     return () => {
       dispatch(clearQuizStatus());
     };
+  }, [activeTab, dispatch, user]);
+
+  useEffect(() => {
+    if (!user) return;
+    if (activeTab !== "Locations") return;
+
+    dispatch(fetchLocationsRequest());
   }, [activeTab, dispatch, user]);
 
   if (!user) return null;
@@ -174,6 +194,95 @@ export default function ProfilePage() {
               description="Enable people to ask you questions directly. Your responses will appear here."
               icon="💬"
             />
+          )}
+
+          {activeTab === "Locations" && (
+            <div id="profile-tab-locations-content" className={styles.card}>
+              <div className="p-6 space-y-5">
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                  <div>
+                    <h2 className="text-xl font-bold text-[var(--color-fg)]">
+                      Your Locations
+                    </h2>
+                    <p className="text-sm text-[var(--color-fg)] opacity-60 mt-1">
+                      All saved branches and workplaces linked to your account.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => router.push("/master-data/locations")}
+                    className="px-5 py-2 bg-accent text-white rounded-full text-sm font-bold shadow-md hover:opacity-90 transition-opacity cursor-pointer"
+                  >
+                    Manage Locations
+                  </button>
+                </div>
+
+                {isLoadingLocations ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                    {[1, 2, 3, 4, 5, 6].map((i) => (
+                      <div
+                        key={i}
+                        className="rounded-xl border border-border p-4 animate-pulse bg-[var(--color-surface)]"
+                      >
+                        <div className="h-4 bg-[var(--color-border)] rounded w-1/3"></div>
+                        <div className="mt-3 h-5 bg-[var(--color-border)] rounded w-2/3"></div>
+                        <div className="mt-2 h-4 bg-[var(--color-border)] rounded w-1/2"></div>
+                      </div>
+                    ))}
+                  </div>
+                ) : locationsLoadError ? (
+                  <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
+                    {locationsLoadError}
+                  </div>
+                ) : locations.length === 0 ? (
+                  <div className="rounded-xl border border-border p-8 text-center">
+                    <p className="text-sm text-[var(--color-fg)] opacity-70">
+                      No locations found yet.
+                    </p>
+                    <button
+                      onClick={() => router.push("/master-data/locations")}
+                      className="mt-4 px-5 py-2 bg-accent text-white rounded-full text-sm font-bold shadow-md hover:opacity-90 transition-opacity cursor-pointer"
+                    >
+                      Add Your First Location
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                    {locations.map((location) => (
+                      <div
+                        key={location.id}
+                        id={`profile-location-item-${location.id}`}
+                        className="rounded-xl border border-border p-4 bg-[var(--color-surface)]"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <span className="text-[10px] font-mono font-bold text-accent bg-accent/10 px-2 py-1 rounded">
+                            {location.code}
+                          </span>
+                          <span
+                            className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full ${
+                              location.status === "active"
+                                ? "text-emerald-500 bg-emerald-500/10"
+                                : "text-red-500 bg-red-500/10"
+                            }`}
+                          >
+                            {location.status}
+                          </span>
+                        </div>
+
+                        <h3 className="mt-3 text-base font-bold text-[var(--color-fg)]">
+                          {location.name}
+                        </h3>
+                        <p className="mt-1 text-sm text-[var(--color-fg)] opacity-70">
+                          {location.city || "City not set"}
+                        </p>
+                        <p className="mt-2 text-xs text-[var(--color-fg)] opacity-50 line-clamp-2">
+                          {location.address || "Address not available"}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           )}
 
           {activeTab === "Quiz" && (
