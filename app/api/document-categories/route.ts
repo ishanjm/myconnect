@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { DocumentCategory } from '@/model/DocumentCategory';
 import { validateToken } from '@/common/apiAuth';
+import { hasPermission } from '@/common/permissions';
 
 /**
  * @swagger
@@ -66,6 +67,10 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   const payload = await validateToken(req);
   if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  if (!hasPermission(payload.subscription, 'create_category')) {
+    return NextResponse.json({ error: 'Permission denied' }, { status: 403 });
+  }
 
   try {
     const body = await req.json();

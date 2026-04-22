@@ -10,6 +10,7 @@ import {
   fetchQuizByIdRequest, 
   updateQuizRequest 
 } from "@/store/slices/quizzes";
+import { hasPermission } from "@/common/permissions";
 
 type Answer = {
   id: string;
@@ -64,7 +65,15 @@ export default function QuizBuilderPage() {
   const { isSaving, error, successMessage, isLoading, items } = useSelector(
     (state: RootState) => state.quizzes,
   );
+  const user = useSelector((state: RootState) => state.auth.user);
   const [quizzes, setQuizzes] = useState<Quiz[]>([createQuiz()]);
+
+  // Access control
+  useEffect(() => {
+    if (user && !hasPermission(user.subscription, 'quiz_builder')) {
+      router.push("/");
+    }
+  }, [user, router]);
 
   // Fetch quiz for editing
   useEffect(() => {

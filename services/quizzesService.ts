@@ -51,4 +51,9 @@ export const quizzesService = {
   deleteQuiz: async (id: number): Promise<void> => {
     await axios.delete(`${API_BASE}/${id}`);
   },
+
+  joinQuiz: async (code: string): Promise<QuizItem> => {
+    const response = await axios.get<{ quiz: QuizItem }>(`${API_BASE}/join?code=${code}`);
+    return response.data.quiz;
+  },
 };

@@ -13,6 +13,7 @@ import { Modal } from "@/components/common/Modal";
 import { fetchCategoriesRequest, createCategoryRequest } from "@/store/slices/documentCategories";
 import { fetchLocationsRequest } from "@/store/slices/locations";
 import { fetchDocumentsRequest, createDocumentRequest } from "@/store/slices/documents";
+import { hasPermission } from "@/common/permissions";
 
 interface DocumentHubProps {
   id?: string;
@@ -24,6 +25,7 @@ export const DocumentHub: React.FC<DocumentHubProps> = ({ id = "document-hub", i
   const { items: locations } = useSelector((state: RootState) => state.locations);
   const { items: categories, isSaving: isSavingCategory } = useSelector((state: RootState) => state.documentCategories);
   const { items: documents, isLoading: isLoadingDocs, isSaving: isSavingDoc } = useSelector((state: RootState) => state.documents);
+  const user = useSelector((state: RootState) => state.auth.user);
   
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | "all">("all");
@@ -92,16 +94,18 @@ export const DocumentHub: React.FC<DocumentHubProps> = ({ id = "document-hub", i
           </div>
 
           <div className="flex flex-col items-end gap-4 w-full md:w-auto">
-            <button
-              id={`${id}-add-document-btn`}
-              onClick={() => setIsDocumentModalOpen(true)}
-              className="px-6 py-3 bg-accent text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-accent/20 hover:scale-[1.02] transition-all flex items-center gap-2 w-full md:w-auto justify-center"
-            >
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
-              </svg>
-              Upload Document
-            </button>
+            {hasPermission(user?.subscription, 'upload_document') && (
+              <button
+                id={`${id}-add-document-btn`}
+                onClick={() => setIsDocumentModalOpen(true)}
+                className="px-6 py-3 bg-accent text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-accent/20 hover:scale-[1.02] transition-all flex items-center gap-2 w-full md:w-auto justify-center"
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
+                </svg>
+                Upload Document
+              </button>
+            )}
 
             <div className="flex items-center gap-4 w-full">
               <div className="flex items-center gap-1 bg-[var(--color-surface)] border border-[var(--color-border)] p-1 rounded-xl shadow-sm">
@@ -185,16 +189,18 @@ export const DocumentHub: React.FC<DocumentHubProps> = ({ id = "document-hub", i
                 </button>
               ))}
               
-              <button
-                id={`${id}-add-category-btn`}
-                onClick={() => setIsCategoryModalOpen(true)}
-                className="p-2.5 rounded-xl border-2 border-dashed border-[var(--color-border)] text-blue-500 hover:bg-blue-500/5 transition-colors group"
-                title="Create New Category"
-              >
-                <svg className="h-5 w-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-              </button>
+              {hasPermission(user?.subscription, 'create_category') && (
+                <button
+                  id={`${id}-add-category-btn`}
+                  onClick={() => setIsCategoryModalOpen(true)}
+                  className="p-2.5 rounded-xl border-2 border-dashed border-[var(--color-border)] text-blue-500 hover:bg-blue-500/5 transition-colors group"
+                  title="Create New Category"
+                >
+                  <svg className="h-5 w-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                </button>
+              )}
             </div>
 
             <LocationDropdown 

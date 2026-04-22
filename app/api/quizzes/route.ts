@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { validateToken } from "@/common/apiAuth";
+import { hasPermission } from "@/common/permissions";
 import { Quiz, CreateQuizPayload } from "@/model/Quiz";
 import { ensureDbInitialized } from "@/utils/dbInit";
 
@@ -57,6 +58,10 @@ export async function POST(req: Request) {
   const payload = await validateToken(req);
   if (!payload)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  if (!hasPermission(payload.subscription, 'quiz_builder')) {
+    return NextResponse.json({ error: "Permission denied" }, { status: 403 });
+  }
 
   try {
     const body = (await req.json()) as { quizzes?: CreateQuizPayload[] };

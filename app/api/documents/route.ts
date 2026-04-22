@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { Document } from '@/model/Document';
 import { uploadToCloudinary } from '@/utils/cloudinary';
 import { validateToken } from '@/common/apiAuth';
+import { hasPermission } from '@/common/permissions';
 
 /**
  * @swagger
@@ -69,6 +70,10 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   const payload = await validateToken(req);
   if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  if (!hasPermission(payload.subscription, 'upload_document')) {
+    return NextResponse.json({ error: 'Permission denied' }, { status: 403 });
+  }
 
   try {
     
