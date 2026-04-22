@@ -3,6 +3,7 @@ import { Op } from "sequelize";
 import { Document, IDocument } from "@/model/Document";
 import { User, UserAttributes } from "@/model/User";
 import { deleteFromCloudinary } from "@/utils/cloudinary";
+import { SUBSCRIPTIONS } from "@/common/auth.constants";
 
 export const runtime = "nodejs";
 
@@ -48,7 +49,7 @@ export async function GET(req: Request) {
   try {
     const trialUsers = (await User.findAll({
       attributes: ["id"],
-      where: { subscription: "trial" },
+      where: { subscription: SUBSCRIPTIONS.TRIAL },
     })) as unknown as Array<Pick<UserAttributes, "id">>;
 
     const trialUserIds = trialUsers.map((user) => user.id);

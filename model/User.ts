@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../utils/db';
 import { UserRole } from './auth';
+import { SubscriptionType, SUBSCRIPTION_VALUES } from '@/common/auth.constants';
 
 export interface UserAttributes {
   id: number;
@@ -8,7 +9,7 @@ export interface UserAttributes {
   password?: string;
   firstName: string;
   lastName: string;
-  subscription: 'trial' | 'small' | 'medium' | 'large' | 'custom';
+  subscription: SubscriptionType;
   address: string | null;
   mobileNumber: string | null;
   profileImage: string | null;
@@ -46,7 +47,7 @@ const User = sequelize.define<Model<UserAttributes, UserCreationAttributes>>(
       allowNull: false,
     },
     subscription: {
-      type: DataTypes.ENUM('trial', 'small', 'medium', 'large', 'custom'),
+      type: DataTypes.ENUM(...SUBSCRIPTION_VALUES),
       allowNull: false,
     },
     address: {

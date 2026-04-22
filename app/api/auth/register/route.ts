@@ -37,7 +37,7 @@ import { uploadToCloudinary } from "@/utils/cloudinary";
  *                 type: string
  *               subscription:
  *                 type: string
- *                 enum: [trial, small, medium, large, custom]
+ *                 enum: [trial, small, medium, large, custom, student]
  *               address:
  *                 type: string
  *               mobileNumber:

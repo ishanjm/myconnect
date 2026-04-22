@@ -1,3 +1,5 @@
+import { SubscriptionType } from "@/common/auth.constants";
+
 export type UserRole = 'super admin' | 'group admin' | 'member';
 
 export interface LoginCredentials {
@@ -8,7 +10,7 @@ export interface LoginCredentials {
 export interface RegisterCredentials extends LoginCredentials {
   firstName: string;
   lastName: string;
-  subscription: 'trial' | 'small' | 'medium' | 'large' | 'custom';
+  subscription: SubscriptionType;
   address?: string;
   mobileNumber?: string;
   profileImage?: string;
@@ -20,7 +22,7 @@ export interface AuthUser {
   firstName?: string;
   lastName?: string;
   role: UserRole;
-  subscription?: string;
+  subscription?: SubscriptionType;
   profileImage?: string;
 }
 
