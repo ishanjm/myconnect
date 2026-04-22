@@ -4,7 +4,7 @@ export const profilePageStyles = {
   avatarSection: "flex flex-col sm:flex-row items-center sm:items-end gap-4 px-6 -mt-12 pb-6",
   avatarContainer: "relative group cursor-pointer",
   avatar: "h-24 w-24 rounded-full object-cover border-4 border-[var(--color-surface)] shadow-lg transition-all group-hover:opacity-75",
-  avatarOverlay: "absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity",
+  avatarOverlay: "absolute inset-0 flex items-center justify-center rounded-full bg-black/40 transition-opacity",
   editIcon: "text-white text-xl",
   name: "text-xl font-bold text-[var(--color-fg)] text-center sm:text-left",
   email: "text-sm text-[var(--color-fg)] opacity-60 text-center sm:text-left",

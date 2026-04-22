@@ -122,12 +122,17 @@ export default function ProfilePage() {
                 alt={fullName}
                 className={styles.avatar}
               />
-              <div className={styles.avatarOverlay}>
-                {isUploading ? (
-                  <FaSpinner className={`${styles.editIcon} animate-spin`} />
-                ) : (
-                  <FaCamera className={styles.editIcon} />
-                )}
+              <div className={`${styles.avatarOverlay} ${isUploading ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                <div className="flex flex-col items-center gap-1">
+                  {isUploading ? (
+                    <>
+                      <FaSpinner className={`${styles.editIcon} animate-spin`} />
+                      <span className="text-[10px] text-white font-bold uppercase tracking-widest">Uploading</span>
+                    </>
+                  ) : (
+                    <FaCamera className={styles.editIcon} />
+                  )}
+                </div>
               </div>
               <input
                 type="file"
