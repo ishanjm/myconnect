@@ -5,10 +5,11 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { hasPermission } from "@/common/permissions";
 import { useRouter } from "next/navigation";
-import { quizzesService, QuizItem, QuizAttemptAnswer } from "@/services/quizzesService";
+import { quizzesService, QuizItem, QuizAttemptAnswer, QuizAttemptItem } from "@/services/quizzesService";
 import { QuizQuestion } from "@/model/Quiz";
+import StudentQuizDashboard from "@/components/Quiz/StudentQuizDashboard";
 
-type Phase = "code" | "preview" | "taking" | "results";
+type Phase = "dashboard" | "code" | "preview" | "taking" | "results";
 
 /** Fisher–Yates shuffle (returns new array) */
 const shuffle = <T,>(arr: T[]): T[] => {
@@ -25,7 +26,7 @@ export default function TakeQuizPage() {
   const router = useRouter();
 
   /* ── Shared state ──────────────────────────────────────────── */
-  const [phase, setPhase] = useState<Phase>("code");
+  const [phase, setPhase] = useState<Phase>("dashboard");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -154,6 +155,21 @@ export default function TakeQuizPage() {
   const answeredCount = useMemo(() => Object.keys(answerMap).length, [answerMap]);
   const currentQuestion = preparedQuestions[currentIdx];
 
+  /* ───────────────────── PHASE: DASHBOARD ───────────────────── */
+  if (phase === "dashboard") {
+    return (
+      <div className="min-h-[80vh] bg-bg p-4 md:p-8">
+        <StudentQuizDashboard 
+          onJoinNewQuiz={() => {
+            setPhase("code");
+            setAccessCode("");
+            setError(null);
+          }} 
+        />
+      </div>
+    );
+  }
+
   /* ───────────────────────── PHASE: CODE ────────────────────── */
   if (phase === "code") {
     return (
@@ -195,6 +211,15 @@ export default function TakeQuizPage() {
                 </div>
               ) : "Join Quiz"}
             </button>
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={() => { setPhase("dashboard"); setAccessCode(""); setError(null); }}
+                className="mt-4 text-xs font-bold uppercase tracking-widest text-fg opacity-40 hover:opacity-100 transition-opacity"
+              >
+                ← Back to My Quizzes
+              </button>
+            </div>
           </form>
           <p className="text-center text-[10px] font-black uppercase tracking-widest text-fg opacity-20">MyConnect Educational Platform</p>
         </div>
@@ -460,7 +485,7 @@ export default function TakeQuizPage() {
             <button
               id="quiz-try-another-btn"
               onClick={() => {
-                setPhase("code");
+                setPhase("dashboard");
                 setQuiz(null);
                 setAccessCode("");
                 setAnswerMap({});
@@ -468,7 +493,7 @@ export default function TakeQuizPage() {
               }}
               className="flex-1 py-4 bg-accent text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:opacity-90 transition-all cursor-pointer"
             >
-              Try Another Quiz
+              Back to Dashboard
             </button>
             <button
               id="quiz-retake-btn"

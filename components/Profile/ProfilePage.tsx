@@ -14,6 +14,8 @@ import {
 import { fetchLocationsRequest } from "@/store/slices/locations";
 import { updateProfileImageRequest } from "@/store/slices/auth";
 import { FaCamera, FaSpinner } from "react-icons/fa";
+import { hasPermission } from "@/common/permissions";
+import StudentQuizDashboard from "../Quiz/StudentQuizDashboard";
 
 export default function ProfilePage() {
   const dispatch = useDispatch();
@@ -331,8 +333,9 @@ export default function ProfilePage() {
           )}
 
           {activeTab === "Quiz" && (
-            <div id="profile-tab-quiz-content" className={styles.card}>
-              <div className="p-6 space-y-5">
+            hasPermission(user?.subscription, 'quiz_builder') ? (
+              <div id="profile-tab-quiz-content" className={styles.card}>
+                <div className="p-6 space-y-5">
                 <div className="flex items-center justify-between gap-3 flex-wrap">
                   <div>
                     <h2 className="text-xl font-bold text-[var(--color-fg)]">
@@ -428,6 +431,13 @@ export default function ProfilePage() {
                 )}
               </div>
             </div>
+            ) : (
+              <div id="profile-tab-student-quiz-content" className={styles.card}>
+                <div className="p-6">
+                  <StudentQuizDashboard onJoinNewQuiz={() => router.push("/take-quiz")} />
+                </div>
+              </div>
+            )
           )}
 
           {activeTab === "Followers" && (
