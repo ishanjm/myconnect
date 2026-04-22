@@ -1,24 +1,21 @@
 import axios from "axios";
-import { QuizQuestion } from "@/model/Quiz";
+import { QuizAttributes, CreateQuizPayload, QuizQuestion } from "@/model/Quiz";
+import { QuizAttemptAnswer, QuizAttemptAttributes } from "@/model/QuizAttempt";
 
-export interface QuizItem {
-  id: number;
-  title: string;
-  questions: QuizQuestion[];
-  userId: number;
-  accessKey: string;
-  shuffleQuestions?: boolean;
-  shuffleAnswers?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-}
+/** Client-side alias for QuizAttributes */
+export type QuizItem = QuizAttributes;
 
-export interface CreateQuizInput {
-  title: string;
-  questions: QuizQuestion[];
-  shuffleQuestions: boolean;
-  shuffleAnswers: boolean;
-}
+/** Client-side alias for CreateQuizPayload */
+export type CreateQuizInput = CreateQuizPayload;
+
+/** Client-side alias for QuizAttemptAttributes (without server-only fields) */
+export type QuizAttemptItem = Omit<QuizAttemptAttributes, 'updatedAt'> & { createdAt?: string };
+
+/** Payload for saving a quiz attempt */
+export type SaveQuizAttemptInput = Omit<QuizAttemptAttributes, 'id' | 'userId' | 'createdAt' | 'updatedAt'>;
+
+/** Re-export for consumer convenience */
+export type { QuizAttemptAnswer, QuizQuestion };
 
 const API_BASE = "/api/quizzes";
 
@@ -55,5 +52,15 @@ export const quizzesService = {
   joinQuiz: async (code: string): Promise<QuizItem> => {
     const response = await axios.get<{ quiz: QuizItem }>(`${API_BASE}/join?code=${code}`);
     return response.data.quiz;
+  },
+
+  saveAttempt: async (attempt: SaveQuizAttemptInput): Promise<QuizAttemptItem> => {
+    const response = await axios.post<{ attempt: QuizAttemptItem }>("/api/quiz-attempts", attempt);
+    return response.data.attempt;
+  },
+
+  fetchAttempts: async (): Promise<QuizAttemptItem[]> => {
+    const response = await axios.get<{ attempts: QuizAttemptItem[] }>("/api/quiz-attempts");
+    return response.data.attempts;
   },
 };

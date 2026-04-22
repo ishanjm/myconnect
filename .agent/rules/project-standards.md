@@ -40,11 +40,12 @@ if (isLoading) return <LoadingScreen id="product-detail-loading" />;
 return <ProductDetail id="product-detail" ... />;
 ```
 
-## 4. Types and Interfaces in Model Folder
+## 4. Types and Interfaces in Model Folder (Single Source of Truth)
 
-- Put all **types and interfaces** in the **model** folder (e.g. `model/` or `models/`).
-- Import types from there instead of defining them inline in components or pages.
-- Keeps contracts in one place and reusable across the app.
+- Put all **types and interfaces** in the **model** folder (e.g. `model/`).
+- **Never duplicate** an interface in services, components, store, or pages. Define once in `model/`, import everywhere.
+- Services may use `type` aliases (`export type QuizItem = QuizAttributes;`) or derived types (`Omit`, `Pick`, `Partial`) but must **never** re-declare fields.
+- Refer to [single-source-types.md](file:///c:/Ishan/developments/myconnect/.agent/rules/single-source-types.md) for detailed rules.
 
 ## 5. Common Folder for Shared Methods
 
@@ -131,7 +132,7 @@ import Link from "next/link";
 | IDs | Add domain-based `id` on components and key elements for QA |
 | Data | Use Redux for data communication |
 | Loading | Show loading screen/skeleton while data is loading |
-| Types | Put types/interfaces in the **model** folder |
+| Types | **Single source of truth**: define in `model/`, never duplicate in services/components |
 | Methods | Put shared logic in the **common** folder |
 | Forms | Use Formik + Yup for all forms |
 | UI | Use reusable components from the components folder |

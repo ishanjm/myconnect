@@ -46,6 +46,7 @@ export const syncDB = async (force = false) => {
       await import("../model/Location");
       await import("../model/DocumentCategory");
       await import("../model/Quiz");
+      await import("../model/QuizAttempt");
 
       await sequelize.authenticate();
       // alter: false by default to avoid index bloat. 
