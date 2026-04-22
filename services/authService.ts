@@ -25,3 +25,13 @@ export function meApi() {
     apiClient.get('/auth/me').then((res) => res.data)
   );
 }
+
+export function updateProfileImageApi(formData: FormData) {
+  return from(
+    apiClient.post<{ success: boolean; profileImage: string }>('/user/profile-image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }).then((res) => res.data)
+  );
+}

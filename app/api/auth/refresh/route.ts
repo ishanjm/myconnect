@@ -20,7 +20,7 @@ import {
  */
 export async function POST(req: Request) {
   try {
-    const refreshToken =
+    const incomingRefreshToken =
       (req as any).cookies?.get("refresh_token")?.value ||
       req.headers
         .get("cookie")
@@ -28,14 +28,14 @@ export async function POST(req: Request) {
         .find((c) => c.startsWith("refresh_token="))
         ?.split("=")[1];
 
-    if (!refreshToken) {
+    if (!incomingRefreshToken) {
       return NextResponse.json(
         { error: "Refresh token missing" },
         { status: 401 },
       );
     }
 
-    const payload = await verifyToken(refreshToken);
+    const payload = await verifyToken(incomingRefreshToken);
 
     // Re-issue tokens and extend cookie lifetime for persistent sessions
     const accessToken = await signAccessToken({

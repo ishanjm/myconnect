@@ -29,7 +29,7 @@ function toErrorMessage(error: unknown): string {
  */
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const payload = await validateToken(req);
   if (!payload)

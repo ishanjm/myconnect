@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { User } from "@/model/User";
+import { User, UserAttributes } from "@/model/User";
 import {
   PERSISTENT_SESSION_MAX_AGE_SECONDS,
   signAccessToken,
@@ -55,7 +55,7 @@ export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
 
-    const user = await User.findOne({ where: { email } });
+    const user = (await User.findOne({ where: { email } })) as unknown as UserAttributes | null;
     if (!user) {
       return NextResponse.json(
         { error: "Invalid email or password" },
@@ -63,8 +63,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const isMatch = await comparePassword(password, user.password);
-    if (!isMatch) {
+    if (!user.password || !(await comparePassword(password, user.password))) {
       return NextResponse.json(
         { error: "Invalid email or password" },
         { status: 401 },

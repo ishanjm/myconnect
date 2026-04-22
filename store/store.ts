@@ -17,6 +17,7 @@ import documentCategoriesReducer from './slices/documentCategories';
 import documentsReducer from './slices/documents';
 import postsReducer from './slices/posts';
 import quizzesReducer from './slices/quizzes';
+import { Action } from '@reduxjs/toolkit';
 import { rootEpic } from './epics/rootEpic';
 
 const rootReducer = combineReducers({
@@ -37,7 +38,7 @@ const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-const epicMiddleware = createEpicMiddleware();
+const epicMiddleware = createEpicMiddleware<Action, Action>();
 
 export const store = configureStore({
   reducer: persistedReducer,

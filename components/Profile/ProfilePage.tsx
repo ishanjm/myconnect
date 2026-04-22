@@ -12,6 +12,8 @@ import {
   fetchQuizzesRequest,
 } from "@/store/slices/quizzes";
 import { fetchLocationsRequest } from "@/store/slices/locations";
+import { updateProfileImageRequest } from "@/store/slices/auth";
+import { FaCamera, FaSpinner } from "react-icons/fa";
 
 export default function ProfilePage() {
   const dispatch = useDispatch();
@@ -30,6 +32,8 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("Profile info");
   const router = useRouter();
   const searchParams = useSearchParams();
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const { isLoading: isUploading } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     const tabParam = searchParams.get("tab");
@@ -71,6 +75,21 @@ export default function ProfilePage() {
     dispatch(fetchLocationsRequest());
   }, [activeTab, dispatch, user]);
 
+  const handleAvatarClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append("image", file);
+      dispatch(updateProfileImageRequest(formData));
+    }
+  };
+
   if (!user) return null;
 
   const fullName =
@@ -92,12 +111,33 @@ export default function ProfilePage() {
 
           {/* Avatar + Name */}
           <div className={styles.avatarSection}>
-            <img
-              id="profile-avatar"
-              src={avatarSrc}
-              alt={fullName}
-              className={styles.avatar}
-            />
+            <div 
+              id="profile-avatar-container" 
+              className={styles.avatarContainer}
+              onClick={handleAvatarClick}
+            >
+              <img
+                id="profile-avatar"
+                src={avatarSrc}
+                alt={fullName}
+                className={styles.avatar}
+              />
+              <div className={styles.avatarOverlay}>
+                {isUploading ? (
+                  <FaSpinner className={`${styles.editIcon} animate-spin`} />
+                ) : (
+                  <FaCamera className={styles.editIcon} />
+                )}
+              </div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
+                onChange={handleImageChange}
+                disabled={isUploading}
+              />
+            </div>
             <div className="flex-1 pt-2">
               <h1 id="profile-full-name" className={styles.name}>
                 {fullName}
@@ -345,7 +385,7 @@ export default function ProfilePage() {
                         className="rounded-xl border border-border p-4 flex items-center justify-between gap-3"
                       >
                         <div className="flex-1 min-w-0">
-                          <h3 
+                          <h3
                             className="text-base font-bold text-[var(--color-fg)] truncate cursor-pointer hover:text-accent transition-colors"
                             onClick={() => router.push(`/quiz?id=${quiz.id}`)}
                             title="Click to edit"
@@ -447,4 +487,3 @@ const InfoField = ({
     </span>
   </div>
 );
-

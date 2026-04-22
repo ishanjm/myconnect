@@ -72,6 +72,21 @@ const authSlice = createSlice({
       state.isLoading = false;
       // We don't set error here because hydration failure just means user is not logged in
     },
+    updateProfileImageRequest: (state, action: PayloadAction<FormData>) => {
+      state.isLoading = true;
+      state.error = null;
+    },
+    updateProfileImageSuccess: (state, action: PayloadAction<{ profileImage: string }>) => {
+      state.isLoading = false;
+      if (state.user) {
+        state.user.profileImage = action.payload.profileImage;
+      }
+      state.error = null;
+    },
+    updateProfileImageFailure: (state, action: PayloadAction<string>) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -79,6 +94,7 @@ export const {
   loginRequest, loginSuccess, loginFailure, 
   registerRequest, registerSuccess, registerFailure, 
   logoutRequest, logoutSuccess, logoutFailure,
-  meRequest, meSuccess, meFailure
+  meRequest, meSuccess, meFailure,
+  updateProfileImageRequest, updateProfileImageSuccess, updateProfileImageFailure
 } = authSlice.actions;
 export default authSlice.reducer;

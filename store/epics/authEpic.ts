@@ -6,9 +6,10 @@ import {
   loginRequest, loginSuccess, loginFailure, 
   registerRequest, registerSuccess, registerFailure,
   logoutRequest, logoutSuccess, logoutFailure,
-  meRequest, meSuccess, meFailure 
+  meRequest, meSuccess, meFailure,
+  updateProfileImageRequest, updateProfileImageSuccess, updateProfileImageFailure 
 } from '../slices/auth';
-import { loginApi, registerApi, logoutApi, meApi } from '@/services/authService';
+import { loginApi, registerApi, logoutApi, meApi, updateProfileImageApi } from '@/services/authService';
 
 const loginEpic: Epic<Action> = (action$) =>
   action$.pipe(
@@ -74,4 +75,23 @@ export const meEpic: Epic<Action> = (action$) =>
     )
   );
 
-export const authEpic = combineEpics(loginEpic, registerEpic, logoutEpic, meEpic);
+export const updateProfileImageEpic: Epic<Action> = (action$) =>
+  action$.pipe(
+    ofType(updateProfileImageRequest.type),
+    mergeMap((action: any) =>
+      updateProfileImageApi(action.payload).pipe(
+        map((response) => updateProfileImageSuccess({ profileImage: response.profileImage })),
+        catchError((error) => {
+          let errorMsg = 'Failed to update profile image';
+          if (error.response?.data?.error) {
+            errorMsg = error.response.data.error;
+          } else if (error.message) {
+            errorMsg = error.message;
+          }
+          return of(updateProfileImageFailure(errorMsg));
+        })
+      )
+    )
+  );
+
+export const authEpic = combineEpics(loginEpic, registerEpic, logoutEpic, meEpic, updateProfileImageEpic);
