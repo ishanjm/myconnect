@@ -44,6 +44,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
+    const previousAttempt = await QuizAttempt.findOne({
+      where: { quizId, userId: payload.id }
+    });
+
+    if (previousAttempt) {
+      return NextResponse.json({ error: "You have already attempted this quiz." }, { status: 400 });
+    }
+
     const attempt = await QuizAttempt.create({
       quizId,
       quizTitle,

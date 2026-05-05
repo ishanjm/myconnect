@@ -495,13 +495,6 @@ export default function TakeQuizPage() {
             >
               Back to Dashboard
             </button>
-            <button
-              id="quiz-retake-btn"
-              onClick={handleStart}
-              className="flex-1 py-4 bg-surface border border-border text-fg rounded-2xl font-bold text-sm hover:bg-bg transition-all cursor-pointer"
-            >
-              Retake This Quiz
-            </button>
           </div>
         </div>
       </div>

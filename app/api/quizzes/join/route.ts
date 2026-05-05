@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { validateToken } from "@/common/apiAuth";
 import { Quiz } from "@/model/Quiz";
+import { QuizAttempt } from "@/model/QuizAttempt";
 import { ensureDbInitialized } from "@/utils/dbInit";
 import { hasPermission } from "@/common/permissions";
 
@@ -48,6 +49,14 @@ export async function GET(req: Request) {
 
     if (!quiz) {
       return NextResponse.json({ error: "Quiz not found" }, { status: 404 });
+    }
+
+    const previousAttempt = await QuizAttempt.findOne({
+      where: { quizId: quiz.id, userId: payload.id }
+    });
+
+    if (previousAttempt) {
+      return NextResponse.json({ error: "You have already attempted this quiz." }, { status: 400 });
     }
 
     return NextResponse.json({ quiz });
