@@ -4,6 +4,7 @@ import { Quiz } from "@/model/Quiz";
 import { QuizAttempt } from "@/model/QuizAttempt";
 import { ensureDbInitialized } from "@/utils/dbInit";
 import { hasPermission } from "@/common/permissions";
+import { followersServerService } from "@/services/followersServerService";
 
 /**
  * @swagger
@@ -42,9 +43,10 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Invalid access code" }, { status: 400 });
     }
 
+    // Fetch the quiz without exposing the creator's userId to the client
     const quiz = await Quiz.findOne({ 
       where: { accessKey: code },
-      attributes: { exclude: ['userId'] } // Hide creator ID for privacy
+      attributes: { exclude: ['userId'] }
     });
 
     if (!quiz) {
@@ -59,9 +61,20 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "You have already attempted this quiz." }, { status: 400 });
     }
 
+    // Auto-follow: look up the creator (separate query to get userId) and add student as follower
+    const quizWithCreator = await Quiz.findOne({ where: { accessKey: code } });
+    if (quizWithCreator) {
+      const creatorId = (quizWithCreator.get() as import("@/model/Quiz").QuizAttributes).userId;
+      // Fire-and-forget — don't block the response if this fails
+      followersServerService.followUser(creatorId, payload.id).catch((err) => {
+        console.warn("[quiz/join] Auto-follow failed:", err?.message);
+      });
+    }
+
     return NextResponse.json({ quiz });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Failed to join quiz";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
+

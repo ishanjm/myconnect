@@ -47,10 +47,10 @@ export const syncDB = async (force = false) => {
       await import("../model/DocumentCategory");
       await import("../model/Quiz");
       await import("../model/QuizAttempt");
+      await import("../model/Follower");
 
       await sequelize.authenticate();
-      // alter: false by default to avoid index bloat. 
-      // Set to true manually once if you have schema changes.
+      // alter: false to prevent index bloat. Set to true once manually if schema changes are needed.
       await sequelize.sync({ force, alter: false });
 
       isInitialSync = true;
