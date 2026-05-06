@@ -17,6 +17,33 @@ export type SaveQuizAttemptInput = Omit<QuizAttemptAttributes, 'id' | 'userId' |
 /** Re-export for consumer convenience */
 export type { QuizAttemptAnswer, QuizQuestion };
 
+export interface QuizStatsStudent {
+  rank: number;
+  userId: number;
+  firstName: string;
+  lastName: string;
+  profileImage: string | null;
+  score: number;
+  correctAnswers: number;
+  totalQuestions: number;
+  timeTakenSeconds: number;
+  passed: boolean;
+  attemptDate?: Date | string;
+}
+
+export interface QuizStats {
+  quizId: number;
+  quizTitle: string;
+  totalAttempts: number;
+  passCount: number;
+  failCount: number;
+  passRate: number;
+  averageScore: number;
+  highestScore: number;
+  lowestScore: number;
+  rankedStudents: QuizStatsStudent[];
+}
+
 const API_BASE = "/api/quizzes";
 
 export const quizzesService = {
@@ -62,5 +89,10 @@ export const quizzesService = {
   fetchAttempts: async (): Promise<QuizAttemptItem[]> => {
     const response = await axios.get<{ attempts: QuizAttemptItem[] }>("/api/quiz-attempts");
     return response.data.attempts;
+  },
+
+  fetchQuizStats: async (quizId: number): Promise<QuizStats> => {
+    const response = await axios.get<QuizStats>(`${API_BASE}/${quizId}/stats`);
+    return response.data;
   },
 };

@@ -16,6 +16,7 @@ import { updateProfileImageRequest } from "@/store/slices/auth";
 import { FaCamera, FaSpinner } from "react-icons/fa";
 import { hasPermission } from "@/common/permissions";
 import StudentQuizDashboard from "../Quiz/StudentQuizDashboard";
+import QuizAnalyticsDashboard from "../Quiz/QuizAnalyticsDashboard";
 
 export default function ProfilePage() {
   const dispatch = useDispatch();
@@ -32,6 +33,7 @@ export default function ProfilePage() {
     error: locationsLoadError,
   } = useSelector((state: RootState) => state.locations);
   const [activeTab, setActiveTab] = useState("Profile info");
+  const [quizSubTab, setQuizSubTab] = useState<"quizzes" | "analytics">("quizzes");
   const router = useRouter();
   const searchParams = useSearchParams();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -336,101 +338,133 @@ export default function ProfilePage() {
             hasPermission(user?.subscription, 'quiz_builder') ? (
               <div id="profile-tab-quiz-content" className={styles.card}>
                 <div className="p-6 space-y-5">
-                <div className="flex items-center justify-between gap-3 flex-wrap">
-                  <div>
-                    <h2 className="text-xl font-bold text-[var(--color-fg)]">
-                      Your Quizzes
-                    </h2>
-                    <p className="text-sm text-[var(--color-fg)] opacity-60 mt-1">
-                      Review quizzes you created and add new ones.
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => router.push("/quiz")}
-                    className="px-5 py-2 bg-accent text-white rounded-full text-sm font-bold shadow-md hover:opacity-90 transition-opacity cursor-pointer"
-                  >
-                    Create Quiz
-                  </button>
-                </div>
-
-                {isLoadingQuizzes ? (
-                  <div className="space-y-3">
-                    {[1, 2, 3].map((i) => (
-                      <div
-                        key={i}
-                        className="rounded-xl border border-border p-4 flex items-center justify-between gap-3 animate-pulse bg-[var(--color-surface)]"
-                      >
-                        <div className="space-y-2 flex-1">
-                          <div className="h-5 bg-[var(--color-border)] rounded w-1/3"></div>
-                          <div className="h-4 bg-[var(--color-border)] rounded w-1/4"></div>
-                        </div>
-                        <div className="h-6 w-16 bg-[var(--color-border)] rounded-full"></div>
-                      </div>
-                    ))}
-                  </div>
-                ) : quizLoadError ? (
-                  <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
-                    {quizLoadError}
-                  </div>
-                ) : userQuizzes.length === 0 ? (
-                  <div className="rounded-xl border border-border p-8 text-center">
-                    <p className="text-sm text-[var(--color-fg)] opacity-70">
-                      You have not created any quizzes yet.
-                    </p>
+                  {/* Sub-tab header */}
+                  <div className="flex items-center justify-between gap-3 flex-wrap">
+                    <div>
+                      <h2 className="text-xl font-bold text-[var(--color-fg)]">Quiz Management</h2>
+                      <p className="text-sm text-[var(--color-fg)] opacity-60 mt-1">
+                        Manage your quizzes and view student performance analytics.
+                      </p>
+                    </div>
                     <button
                       onClick={() => router.push("/quiz")}
-                      className="mt-4 px-5 py-2 bg-accent text-white rounded-full text-sm font-bold shadow-md hover:opacity-90 transition-opacity cursor-pointer"
+                      className="px-5 py-2 bg-accent text-white rounded-full text-sm font-bold shadow-md hover:opacity-90 transition-opacity cursor-pointer"
                     >
-                      Get Started
+                      Create Quiz
                     </button>
                   </div>
-                ) : (
-                  <div className="space-y-3">
-                    {userQuizzes.map((quiz) => (
-                      <div
-                        key={quiz.id}
-                        id={`profile-quiz-item-${quiz.id}`}
-                        className="rounded-xl border border-border p-4 flex items-center justify-between gap-3"
+
+                  {/* Sub-tabs */}
+                  <div
+                    id="quiz-subtabs-nav"
+                    className="flex gap-1 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] p-1 w-fit"
+                  >
+                    {(["quizzes", "analytics"] as const).map((tab) => (
+                      <button
+                        key={tab}
+                        id={`quiz-subtab-${tab}`}
+                        onClick={() => setQuizSubTab(tab)}
+                        className={`rounded-lg px-5 py-1.5 text-xs font-bold capitalize transition-all cursor-pointer ${
+                          quizSubTab === tab
+                            ? "bg-accent text-white shadow-sm"
+                            : "text-[var(--color-fg)] opacity-60 hover:opacity-100 hover:bg-accent/10"
+                        }`}
                       >
-                        <div 
-                          className="flex-1 min-w-0 cursor-pointer group"
-                          onClick={() => router.push(`/quiz?id=${quiz.id}`)}
-                          title="Click to edit"
-                        >
-                          <h3 className="text-base font-bold text-[var(--color-fg)] truncate group-hover:text-accent transition-colors">
-                            {quiz.title}
-                          </h3>
-                          <p className="mt-1 text-sm text-[var(--color-fg)] opacity-70">
-                            {quiz.questions.length} question
-                            {quiz.questions.length === 1 ? "" : "s"}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-3 shrink-0">
-                          {quiz.accessKey && (
-                            <div className="flex flex-col items-center">
-                              <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-fg)] opacity-40 mb-0.5">
-                                Access Key
-                              </span>
-                              <span className="font-mono text-lg font-extrabold tracking-widest text-accent">
-                                {quiz.accessKey}
-                              </span>
-                            </div>
-                          )}
-                          <button
-                            type="button"
-                            onClick={() => dispatch(deleteQuizRequest(quiz.id))}
-                            disabled={isQuizSaving}
-                            className="rounded-full border border-red-300 px-3 py-1 text-xs font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </div>
+                        {tab === "quizzes" ? "My Quizzes" : "Analytics"}
+                      </button>
                     ))}
                   </div>
-                )}
+
+                  {/* Sub-tab: My Quizzes */}
+                  {quizSubTab === "quizzes" && (
+                    <div id="quiz-subtab-quizzes-content" className="animate-in fade-in duration-300">
+                      {isLoadingQuizzes ? (
+                        <div className="space-y-3">
+                          {[1, 2, 3].map((i) => (
+                            <div
+                              key={i}
+                              className="rounded-xl border border-border p-4 flex items-center justify-between gap-3 animate-pulse bg-[var(--color-surface)]"
+                            >
+                              <div className="space-y-2 flex-1">
+                                <div className="h-5 bg-[var(--color-border)] rounded w-1/3"></div>
+                                <div className="h-4 bg-[var(--color-border)] rounded w-1/4"></div>
+                              </div>
+                              <div className="h-6 w-16 bg-[var(--color-border)] rounded-full"></div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : quizLoadError ? (
+                        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
+                          {quizLoadError}
+                        </div>
+                      ) : userQuizzes.length === 0 ? (
+                        <div className="rounded-xl border border-border p-8 text-center">
+                          <p className="text-sm text-[var(--color-fg)] opacity-70">
+                            You have not created any quizzes yet.
+                          </p>
+                          <button
+                            onClick={() => router.push("/quiz")}
+                            className="mt-4 px-5 py-2 bg-accent text-white rounded-full text-sm font-bold shadow-md hover:opacity-90 transition-opacity cursor-pointer"
+                          >
+                            Get Started
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          {userQuizzes.map((quiz) => (
+                            <div
+                              key={quiz.id}
+                              id={`profile-quiz-item-${quiz.id}`}
+                              className="rounded-xl border border-border p-4 flex items-center justify-between gap-3"
+                            >
+                              <div
+                                className="flex-1 min-w-0 cursor-pointer group"
+                                onClick={() => router.push(`/quiz?id=${quiz.id}`)}
+                                title="Click to edit"
+                              >
+                                <h3 className="text-base font-bold text-[var(--color-fg)] truncate group-hover:text-accent transition-colors">
+                                  {quiz.title}
+                                </h3>
+                                <p className="mt-1 text-sm text-[var(--color-fg)] opacity-70">
+                                  {quiz.questions.length} question
+                                  {quiz.questions.length === 1 ? "" : "s"}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-3 shrink-0">
+                                {quiz.accessKey && (
+                                  <div className="flex flex-col items-center">
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-fg)] opacity-40 mb-0.5">
+                                      Access Key
+                                    </span>
+                                    <span className="font-mono text-lg font-extrabold tracking-widest text-accent">
+                                      {quiz.accessKey}
+                                    </span>
+                                  </div>
+                                )}
+                                <button
+                                  type="button"
+                                  onClick={() => dispatch(deleteQuizRequest(quiz.id))}
+                                  disabled={isQuizSaving}
+                                  className="rounded-full border border-red-300 px-3 py-1 text-xs font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Sub-tab: Analytics */}
+                  {quizSubTab === "analytics" && (
+                    <div id="quiz-subtab-analytics-content" className="animate-in fade-in duration-300">
+                      <QuizAnalyticsDashboard quizzes={userQuizzes} />
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
             ) : (
               <div id="profile-tab-student-quiz-content" className={styles.card}>
                 <div className="p-6">
